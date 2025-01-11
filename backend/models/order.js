@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { userDb } = require("../db");
 
 // Order Schema
 const orderSchema = new mongoose.Schema({
@@ -34,6 +33,6 @@ const orderSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-const Order = userDb.model("Order", orderSchema, "Order");
+const Order = mongoose.model("Order", orderSchema, "Order");
 
 module.exports = Order;
