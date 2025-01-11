@@ -4,6 +4,8 @@ const userAuthRoutes = require('./userAuth/userAuthRoutes');
 const userRoutes = require('./user/userRoutes');
 const productRoutes = require('./product/productRoutes');
 const cartRoutes = require('./cart/cartRoutes');
+const orderRoutes = require('./order/orderRoutes');
+const paymentRoutes = require('./payment/paymentRoutes');
 
 const router = express.Router();
 
