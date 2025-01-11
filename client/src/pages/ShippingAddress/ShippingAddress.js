@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { loadStripe } from "@stripe/stripe-js";
-import { AuthContext } from "../context/AuthContext";
-import PopupMsg from "../components/PopupMsg";
+import { AuthContext } from "../../context/AuthContext";
+import { PopupMsg } from "../../components/popup/PopupMsg";
 
 const stripePromise = loadStripe(
   "pk_test_51QYRRtKgiwXQrp00vZiyMntCEv4VM66zASx94cI9qK7T5eMVUnPeys4CSfmIHdPLprOn2zHKE4H1Cf7AWdB9ZEBA00R8j7T7xo"
