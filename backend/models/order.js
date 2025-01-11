@@ -34,6 +34,6 @@ const orderSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-const Order = userDb.model("Order", orderSchema, "order");
+const Order = userDb.model("Order", orderSchema, "Order");
 
 module.exports = Order;

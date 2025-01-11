@@ -25,10 +25,11 @@ const paymentSchema = new mongoose.Schema({
     city: { type: String, required: true },
     state: { type: String, required: true },
     pincode: { type: String, required: true },
+    country: { type: String, required: true },
     mobileno: { type: String, required: true },
   },
 });
 
-const Payment = mongoose.model('Payment', paymentSchema, 'payment');
+const Payment = mongoose.model('Payment', paymentSchema, 'Payment');
 
 module.exports = Payment;
