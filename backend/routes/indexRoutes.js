@@ -15,5 +15,7 @@ router.use('/', userAuthRoutes);
 router.use('/', userRoutes);
 router.use('/', productRoutes);
 router.use('/', cartRoutes);
+router.use('/', orderRoutes);   
+router.use('/', paymentRoutes);
 
 module.exports = router;
