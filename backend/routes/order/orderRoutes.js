@@ -7,17 +7,15 @@ const router = express.Router();
 router.post('/api/checkout', placeOrder);
 
 // Get all orders
-
 router.get('/api/orders', getAllOrder);
 
 // Get an order
-
 router.get('/api/order/:userId', getOrder);
 
 // Get orders by user
-
 router.get('/api/orders/user/:userId', getOrderByUser);
 
+// Get order data by order id
 router.get('/api/orders/:orderId', getOrderData);
 // Delete an order
 router.delete('/api/orders/:id', deleteOrder);
