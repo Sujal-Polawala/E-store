@@ -17,17 +17,19 @@ const Product = (props) => {
   const navigate = useNavigate();
   const { state } = useContext(AuthContext);
   const { isLoggedIn, user } = state;
-  const productItem = props;
+  const productInfo = props;
 
   const [showPopup, setShowPopup] = useState(false);
 
   const handleProductDetails = () => {
     navigate(`/products/${props._id}`, {
       state: {
-        item: productItem,
+        item: productInfo,
       },
     });
   };
+
+  console.log(productInfo);
 
   const handleAddToCart = async () => {
     try {
@@ -62,7 +64,7 @@ const Product = (props) => {
       <div className="w-full relative group">
         <div className="max-w-80 max-h-80 relative overflow-y-hidden">
           <div>
-            <Image className="w-full h-52" imgSrc={props.img} imgName={props.title} />
+            <Image className="w-full h-52" imgSrc={props.img} />
           </div>
           <div className="absolute top-6 left-8">
             {props.badge && <Badge text={props.badge} />}
@@ -114,7 +116,7 @@ const Product = (props) => {
       </div>
       {showPopup && (
         <CartPopup
-          product={productItem}
+          productInfo={productInfo}
           qty={1}
           setShowPopup={setShowPopup}
         />

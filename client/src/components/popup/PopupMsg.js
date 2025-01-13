@@ -50,8 +50,9 @@ const PopupMsg = ({ message, type = "info", onClose }) => {
   );
 };
 
-const CartPopup = ({ product, qty, setShowPopup }) => {
+const CartPopup = ({ productInfo, qty, setShowPopup }) => {
   const navigate = useNavigate();
+  console.log(productInfo);
 
   return (
     <div className="fixed top-4 right-4 bg-white shadow-lg border border-gray-200 p-4 rounded-lg z-50">
@@ -66,12 +67,12 @@ const CartPopup = ({ product, qty, setShowPopup }) => {
       </div>
       <div className="flex items-center mt-2">
         <img
-          src={product?.image}
-          alt={product?.title}
+          src={productInfo.img}
+          alt={productInfo.title}
           className="w-12 h-12 rounded-lg object-cover mr-3"
         />
         <div>
-          <p className="font-semibold text-gray-800">{product?.title}</p>
+          <p className="font-semibold text-gray-800">{productInfo.productName}</p>
           <p className="text-gray-600">Qty: {qty}</p>
         </div>
       </div>

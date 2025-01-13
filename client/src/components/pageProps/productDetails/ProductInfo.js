@@ -14,6 +14,7 @@ const ProductInfo = ({ productInfo }) => {
   const { user } = state;
   const [showPopup, setShowPopup ] = useState(false);
   const dispatch = useDispatch();
+  console.log(productInfo);
   const handleAddToCart = async () => {
     try {
       const response = await axios.post("http://localhost:5000/api/cart", {
@@ -86,7 +87,7 @@ const ProductInfo = ({ productInfo }) => {
       </p>
       {showPopup && (
         <CartPopup
-          product={productInfo}
+          productInfo={productInfo}
           qty={1}
           setShowPopup={setShowPopup}
         />
