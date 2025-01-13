@@ -21,9 +21,13 @@ import Journal from "./pages/Journal/Journal";
 import Offer from "./pages/Offer/Offer";
 import Payment from "./pages/payment/Payment";
 import ProductDetails from "./pages/ProductDetails/ProductDetails";
+import ShippingAddress from "./pages/ShippingAddress/ShippingAddress";
+import SuccessPage from "./pages/Sucess/SuccessPage";
 import Shop from "./pages/Shop/Shop";
 import { AuthProvider } from "./context/AuthContext";
 import MyAccount from "./pages/Profile/MyAccount";
+import MyOrder from "./pages/Profile/MyOrder";
+import OrderDetails from "./pages/OrderDetails/OrderDetails";
 
 const Layout = () => {
   return (
@@ -49,11 +53,15 @@ const router = createBrowserRouter(
         <Route path="/contact" element={<Contact />}></Route>
         <Route path="/journal" element={<Journal />}></Route>
         <Route path="/myaccount" element={<MyAccount />}></Route>
+        <Route path="/myorders" element={<MyOrder />}></Route>
         {/* ==================== Header Navlink End here ===================== */}
         <Route path="/offer" element={<Offer />}></Route>
+        <Route path="/payment" element={<ShippingAddress />}></Route>
+        <Route path="/success" element={<SuccessPage />}></Route>
         <Route path="/products/:id" element={<ProductDetails />}></Route>
+        <Route path="/orders-details/:orderId" element={<OrderDetails />}></Route>
         <Route path="/cart" element={<Cart />}></Route>
-        <Route path="/paymentgateway" element={<Payment />}></Route>
+        {/* <Route path="/paymentgateway" element={<Payment />}></Route> */}
       </Route>
       <Route path="/signup" element={<SignUp />}></Route>
       <Route path="/signin" element={<SignIn />}></Route>
