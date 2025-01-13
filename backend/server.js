@@ -9,6 +9,7 @@ const app = express();
 
 // Middlewares
 app.use(cors());
+app.use('/api/stripe-webhook', bodyParser.raw({ type: 'application/json' }));
 app.use(bodyParser.json());
 app.use(express.json());
 
