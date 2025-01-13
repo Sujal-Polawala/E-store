@@ -64,6 +64,8 @@ const Cart = () => {
     }
   }, [totalAmt]);
 
+  const totalPrice = totalAmt;
+
   
   const handleDelete = async (cartItemId) => {
     try {
@@ -122,7 +124,7 @@ const Cart = () => {
     return (
       <ShippingAddress 
       cartItems={cartItems}
-      totalAmt={totalAmt}
+      totalPrice={totalPrice}
       clearCart={clearCart}
       />
     );

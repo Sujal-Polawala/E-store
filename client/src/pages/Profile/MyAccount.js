@@ -5,6 +5,7 @@ import axios from "axios";
 import { HiOutlineMail, HiUser, HiPencilAlt } from 'react-icons/hi';
 import Breadcrumbs from "../../components/pageProps/Breadcrumbs";
 import AddressForm from '../Address/AddressForm';
+import { PopupMsg } from '../../components/popup/PopupMsg';
 
 const MyAccount = () => {
     const location = useLocation();
@@ -26,6 +27,11 @@ const MyAccount = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const userId = user?.userId;
+    const [popup, setPopup] = useState({
+      message: "",
+      type: "",
+      show: false,
+    })
     
     useEffect(() => {
         const fetchData = async () => {
@@ -76,13 +82,13 @@ const MyAccount = () => {
             data: { address },
           });
           alert(userDetails?.address ? "Address updated!" : "Address added!");
-        //   setPopup({
-        //     message: userDetails?.address
-        //       ? "Address updated successfully!"
-        //       : "Address added successfully!",
-        //     type: "success",
-        //     show: true,
-        //   });
+          setPopup({
+            message: userDetails?.address
+              ? "Address updated successfully!"
+              : "Address added successfully!",
+            type: "success",
+            show: true,
+          });
     
           setUserDetails(response.data.user);
           setIsEditing(false);
@@ -90,11 +96,11 @@ const MyAccount = () => {
         } catch (error) {
           console.error("Error processing address:", error);
           alert("Failed to update address.");
-        //   setPopup({
-        //     message: "Failed to update address. Please try again later.",
-        //     type: "error",
-        //     show: true,
-        //   });
+          setPopup({
+            message: "Failed to update address. Please try again later.",
+            type: "error",
+            show: true,
+          });
         }
       };
     
@@ -109,11 +115,12 @@ const MyAccount = () => {
       };
    return (
     <div className="max-w-container mx-auto px-4">
-      <Breadcrumbs title="About" prevLocation={prevLocation} />
+      <Breadcrumbs title="MyAccount" prevLocation={prevLocation} />
       <div
         className={`max-w-4xl mx-auto mt-12 shadow-2xl rounded-lg`}
       >
         {/* Profile Header */}
+        {popup.show && <PopupMsg message={popup.message} type={popup.type} />}
         <div className="text-center mb-8 px-6">
           <h1
             className={`text-4xl font-extrabold"
