@@ -29,7 +29,10 @@ exports.stripeWebhook = async (req, res) => {
       const payment = await Payment.findOne({ sessionId: session.id });
 
       if (!payment) {
-        return console.error("Payment record not found for sessionId:", session.id);
+        return console.error(
+          "Payment record not found for sessionId:",
+          session.id
+        );
       }
 
       console.log("Payment record found:", payment);
@@ -41,16 +44,22 @@ exports.stripeWebhook = async (req, res) => {
       console.log("Payment record updated:", payment);
 
       // Extract order details
-      const { userId, carts, totalPrice, _id: paymentId, shippingAddress } = payment;
+      const {
+        userId,
+        carts,
+        totalPrice,
+        _id: paymentId,
+        shippingAddress,
+      } = payment;
       console.log("Carts:", carts);
-      
+
       // Ensure we have all necessary data
       if (!userId || !carts || !carts.length || !totalPrice) {
         return console.error("Missing order details.");
       }
-      
+
       console.log("Shipping Address:", shippingAddress);
- 
+
       // Create the order (with shipping address)
       await placeOrder({
         userId,
@@ -76,7 +85,10 @@ exports.stripeWebhook = async (req, res) => {
         { status: "unpaid" },
         { new: true }
       );
-      console.log("Payment status updated to 'unpaid' for sessionId:", session.id);
+      console.log(
+        "Payment status updated to 'unpaid' for sessionId:",
+        session.id
+      );
     } catch (err) {
       console.error("Error updating payment status:", err.message);
     }
@@ -86,11 +98,18 @@ exports.stripeWebhook = async (req, res) => {
 };
 
 exports.createPayment = async (req, res) => {
-  const { userId, products, paymentMethod, totalPrice, shippingAddress } = req.body;
+  const { userId, products, paymentMethod, totalPrice, shippingAddress } =
+    req.body;
 
   try {
     // Check if all required fields are present
-    if (!userId || !products || products.length === 0 || !paymentMethod || !shippingAddress) {
+    if (
+      !userId ||
+      !products ||
+      products.length === 0 ||
+      !paymentMethod ||
+      !shippingAddress
+    ) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -149,10 +168,12 @@ exports.createPayment = async (req, res) => {
       createdAt: new Date(),
     });
 
-    newPayment.paymentId = payment._id.toString();
-
     // Save payment to the database
     const payment = await newPayment.save();
+
+    // Assign the generated ID to `paymentId`
+    payment.paymentId = payment._id.toString();
+    await payment.save(); // Save the updated document with `paymentId`
 
     // Respond with the session ID and payment details
     res.status(200).json({ sessionId: session.id, paymentId: payment._id });
@@ -161,7 +182,6 @@ exports.createPayment = async (req, res) => {
     res.status(500).send("Failed to create payment session");
   }
 };
-
 
 exports.finalizePayment = async (req, res) => {
   const { sessionId } = req.body;
