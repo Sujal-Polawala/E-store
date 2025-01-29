@@ -1,5 +1,5 @@
 const express = require('express');
-const { placeOrder, getAllOrder, getOrderByUser, deleteOrder, getOrder, getOrderData } = require('../../controllers/order/orderController');
+const { placeOrder, getAllOrder, getOrderByUser, deleteOrder, getOrder, getOrderData, downloadOrder } = require('../../controllers/order/orderController');
 
 const router = express.Router();
 
@@ -19,5 +19,8 @@ router.get('/api/orders/user/:userId', getOrderByUser);
 router.get('/api/orders/:orderId', getOrderData);
 // Delete an order
 router.delete('/api/orders/:id', deleteOrder);
+
+// Download an order
+router.get('/api/invoice/:orderId', downloadOrder);
 
 module.exports = router;
