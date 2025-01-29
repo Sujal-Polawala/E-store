@@ -3,6 +3,7 @@
 const Product = require('../../models/productModel');
 const productsData = require('../../data/productsData'); // Importing the sample product data
 const mongoose = require('mongoose');
+const Category = require('../../models/category');
 
 // Function to insert multiple products
 const insertProducts = async (req, res) => {
@@ -29,14 +30,26 @@ const getAllProduct = async (req, res) => {
     res.status(500).json({ message: 'Error fetching products' });
   }
 }
+
+const getFilters = async (req, res) => {
+  try {
+    const categories = await Category.find();
+    res.json({ categories });
+    } catch (err) {
+      res.status(500).json({ message: 'Error fetching categories' });
+      }
+}
+
 const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
-    // console.log(products); // Log the data to see if the response is correct
-    res.json(products);
-  } catch (err) {
-    console.error("Error fetching products", err);
-    res.status(500).json({ message: 'Error fetching products' });
+    const { badge, category } = req.query;
+    const query = {};
+    if (badge) query.badge = badge;
+    if (category) query.category = category;
+    const products = await Product.find(query);
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch products" });
   }
 };
 
@@ -69,5 +82,6 @@ module.exports = {
   insertProducts,
   getAllProduct,
   getAllProducts,
-  fetchProductById
+  fetchProductById,
+  getFilters, 
 };
