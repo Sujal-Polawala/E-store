@@ -12,9 +12,9 @@ const ProductDetails = () => {
   const [prevLocation, setPrevLocation] = useState("");
   const [productInfo, setProductInfo] = useState([]);
 
-  useEffect(() => {
-    setPrevLocation(location.pathname);
-  }, [location]);
+  // useEffect(() => {
+  //   setPrevLocation(location.pathname);
+  // }, [location]);
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -34,7 +34,7 @@ const ProductDetails = () => {
     <div className="w-full mx-auto border-b-[1px] border-b-gray-300">
       <div className="max-w-container mx-auto px-4">
         <div className="xl:-mt-10 -mt-7">
-          <Breadcrumbs title="" prevLocation={prevLocation} />
+          <Breadcrumbs title="Product Description" prevLocation={prevLocation} />
         </div>
         <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4 h-full -mt-5 xl:-mt-8 pb-10 bg-gray-100 p-4">
           <div className="h-full">
