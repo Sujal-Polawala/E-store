@@ -67,12 +67,12 @@ const CartPopup = ({ productInfo, qty, setShowPopup }) => {
       </div>
       <div className="flex items-center mt-2">
         <img
-          src={productInfo.img}
+          src={productInfo.image}
           alt={productInfo.title}
           className="w-12 h-12 rounded-lg object-cover mr-3"
         />
         <div>
-          <p className="font-semibold text-gray-800">{productInfo.productName}</p>
+          <p className="font-semibold text-gray-800">{productInfo.title}</p>
           <p className="text-gray-600">Qty: {qty}</p>
         </div>
       </div>
