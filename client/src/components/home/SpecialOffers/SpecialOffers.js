@@ -38,8 +38,8 @@ const SpecialOffers = () => {
             <Product
               key={index}
               _id={product._id}
-              img={product.image}
-              productName={product.title}
+              image={product.image}
+              title={product.title}
               price={product.price}
               color={product.color}
               badge={product.badge}
