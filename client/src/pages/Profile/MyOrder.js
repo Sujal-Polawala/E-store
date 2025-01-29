@@ -80,16 +80,28 @@ function MyOrder() {
   };
 
   const handleInvoiceClick = (orderId) => {
-    if (activeDropdown === orderId) {
-      setActiveDropdown(null);
-    } else {
-      setLoadingInvoice(orderId);
-      setActiveDropdown(orderId);
-      setTimeout(() => {
-        setLoadingInvoice(null);
-      }, 1000);
-    }
+    setActiveDropdown((prev) => (prev === orderId ? null : orderId));
+    setLoadingInvoice(orderId);
+    setTimeout(() => setLoadingInvoice(null), 1000);
   };
+  
+  const handleInvoiceDownload = async (orderId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/invoice/${orderId}`,
+        { responseType: "blob" } // Important for binary data
+      );
+      const url = URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `invoice-${orderId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Error downloading invoice:", error);
+    }
+  };  
 
   if (!user) {
     return (
@@ -220,18 +232,17 @@ function MyOrder() {
                               </div>
                             ) : (
                               <>
-                                <Link
-                                  to={`/orders/invoice/${order._id}`}
+                                <button onClick={() => handleInvoiceDownload(order._id)}
                                   className="block px-4 py-2 hover:bg-gray-100"
                                 >
                                   Download Invoice
-                                </Link>
-                                <Link
+                                </button>
+                                <button
                                   to={`/orders/invoice/email/${order._id}`}
                                   className="block px-4 py-2 hover:bg-gray-100"
                                 >
                                   Email Invoice
-                                </Link>
+                                </button>
                               </>
                             )}
                           </div>
