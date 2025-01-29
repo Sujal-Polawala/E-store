@@ -187,7 +187,7 @@ const HeaderBottom = () => {
                   } rounded-full w-10 h-10 flex items-center justify-center text-lg uppercase`}
                 >
                   {/* Display the first character of the username or "G" */}
-                  {isLoggedIn && user?.email ? user.email.charAt(0) : "G"}
+                  {isLoggedIn && user?.username ? user.username.charAt(0) : "G"}
                 </div>
               </div>
 
@@ -211,13 +211,13 @@ const HeaderBottom = () => {
                       >
                         <li className="flex items-center text-gray-600 hover:text-blue-600 cursor-pointer transition-all duration-300">
                           <FaUser className="mr-3 text-lg text-blue-500" />
-                          <Link to="/myaccount" className="text-sm font-medium">
+                          <Link to="/profile/myaccount" className="text-sm font-medium">
                             Your Account
                           </Link>
                         </li>
                         <li className="flex items-center text-gray-600 hover:text-green-600 cursor-pointer transition-all duration-300">
                           <FaBox className="mr-3 text-lg text-green-500" />
-                          <Link to="/myorders" className="text-sm font-medium">
+                          <Link to="/profile/myorders" className="text-sm font-medium">
                             Your Orders
                           </Link>
                         </li>

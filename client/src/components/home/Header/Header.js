@@ -3,10 +3,11 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { MdClose } from "react-icons/md";
 import { HiMenuAlt2 } from "react-icons/hi";
 import { motion } from "framer-motion";
-import { logo, logoLight } from "../../../assets/images";
+import { logo } from "../../../assets/images";
 import Image from "../../designLayouts/Image";
 import { navBarList } from "../../../constants";
 import Flex from "../../designLayouts/Flex";
+import Logo from "../../../assets/images/Style_logo-Photoroom.png"
 
 const Header = () => {
   const [showMenu, setShowMenu] = useState(true);
@@ -32,7 +33,7 @@ const Header = () => {
         <Flex className="flex items-center justify-between h-full">
           <Link to="/">
             <div>
-              <Image className="w-20 object-cover" imgSrc={logo} />
+              <Image className="w-36 object-cover" imgSrc={Logo} />
             </div>
           </Link>
           <div>
@@ -72,7 +73,7 @@ const Header = () => {
                   <div className="w-full h-full bg-primeColor p-6">
                     <img
                       className="w-28 mb-6"
-                      src={logoLight}
+                      src={Logo}
                       alt="logoLight"
                     />
                     <ul className="text-gray-200 flex flex-col gap-2">
