@@ -72,8 +72,8 @@ const NewArrivals = () => {
             <div className="px-2" key={product.id}>
               <Product
                 _id={product._id}
-                img={product.image}
-                productName={product.title}
+                image={product.image}
+                title={product.title}
                 price={product.price}
                 color={product.color}
                 badge={product.badge}
