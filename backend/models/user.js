@@ -18,6 +18,8 @@ const UserSchema = new mongoose.Schema({
     country: { type: String },
     mobileno: { type: String },
   },
+  loginAttempts: { type: Number, default: 0 },
+  lockUntil: { type: Date, default: null },
 });
 const User = mongoose.model("User", UserSchema, "User");
 
