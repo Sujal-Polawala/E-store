@@ -90,7 +90,7 @@ const SuccessPage = () => {
   const totalPrice = orderDetails.totalPrice;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center py-8 px-4 mt-16">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4">
         <Breadcrumbs title="Success" prevLocation={prevLocation} />
       {popup.show && <PopupMsg message={popup.message} type={popup.type} />}
       <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-2xl mx-auto">
