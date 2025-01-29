@@ -4,9 +4,11 @@ import { useLocation } from "react-router-dom";
 
 const Breadcrumbs = ({ prevLocation, title }) => {
   const location = useLocation();
-  const [locationPath, setLocationPath] = useState("");
+  const [breadcrumbs, setBreadcrumbs] = useState([]);
+
   useEffect(() => {
-    setLocationPath(location.pathname.split("/")[1]);
+    const pathSegments = location.pathname.split("/").filter((segment) => segment);
+    setBreadcrumbs(pathSegments);
   }, [location]);
 
   return (
@@ -15,14 +17,21 @@ const Breadcrumbs = ({ prevLocation, title }) => {
         {title}
       </h1>
       <p className="text-sm font-normal text-lightText capitalize flex items-center">
-        <span> {prevLocation === "" ? "Home" : prevLocation}</span>
-
-        <span className="px-1">
-          <HiOutlineChevronRight />
-        </span>
-        <span className="capitalize font-semibold text-primeColor">
-          {locationPath}
-        </span>
+        <span>{prevLocation === "" ? "Home" : prevLocation}</span>
+        {breadcrumbs.map((segment, index) => (
+          <React.Fragment key={index}>
+            <span className="px-1">
+              <HiOutlineChevronRight />
+            </span>
+            <span
+              className={`capitalize font-semibold ${
+                index === breadcrumbs.length - 1 ? "text-primeColor" : ""
+              }`}
+            >
+              {segment}
+            </span>
+          </React.Fragment>
+        ))}
       </p>
     </div>
   );
