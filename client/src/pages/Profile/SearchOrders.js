@@ -8,10 +8,10 @@ function SearchOrders({ orders, onSearchChange }) {
   const searchBoxRef = useRef(null); // Reference for the search box container
 
   useEffect(() => {
-    const allSuggestions = orders.flatMap((order) =>
-      order.items.map((item) => item.title)
-    );
-    setSuggestions([...new Set(allSuggestions)]);
+    // const allSuggestions = orders.flatMap((order) =>
+    //   order.items.map((item) => item.title)
+    // );
+    // setSuggestions([...new Set(allSuggestions)]);
   }, [orders]);
 
   useEffect(() => {
