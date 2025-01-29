@@ -73,7 +73,7 @@ function OrderDetails() {
           </p>
           <p className="text-sm text-gray-500">
             <strong>Delivery Date:</strong>{" "}
-            {new Date(order.deliveredAt).toLocaleDateString()}
+            {new Date(order.deliveryDate).toLocaleDateString()}
           </p>
           <p className="text-lg font-semibold text-gray-800 mt-4">
             Total Price:{" "}
