@@ -25,9 +25,12 @@ import ShippingAddress from "./pages/ShippingAddress/ShippingAddress";
 import SuccessPage from "./pages/Sucess/SuccessPage";
 import Shop from "./pages/Shop/Shop";
 import { AuthProvider } from "./context/AuthContext";
+import ProfilePage from "./pages/Profile/ProfilePage";
 import MyAccount from "./pages/Profile/MyAccount";
 import MyOrder from "./pages/Profile/MyOrder";
 import OrderDetails from "./pages/OrderDetails/OrderDetails";
+import ForgotPassword from "./pages/Account/ForgotPassword";
+import ResetPassword from "./pages/Account/ResetPassword";
 
 const Layout = () => {
   return (
@@ -52,8 +55,9 @@ const router = createBrowserRouter(
         <Route path="/about" element={<About />}></Route>
         <Route path="/contact" element={<Contact />}></Route>
         <Route path="/journal" element={<Journal />}></Route>
-        <Route path="/myaccount" element={<MyAccount />}></Route>
-        <Route path="/myorders" element={<MyOrder />}></Route>
+        <Route path="/profile" element={<ProfilePage />}></Route>
+        <Route path="/profile/myaccount" element={<MyAccount />}></Route>
+        <Route path="/profile/myorders" element={<MyOrder />}></Route>
         {/* ==================== Header Navlink End here ===================== */}
         <Route path="/offer" element={<Offer />}></Route>
         <Route path="/payment" element={<ShippingAddress />}></Route>
@@ -65,6 +69,8 @@ const router = createBrowserRouter(
       </Route>
       <Route path="/signup" element={<SignUp />}></Route>
       <Route path="/signin" element={<SignIn />}></Route>
+      <Route path="/forgot-password" element={<ForgotPassword />}></Route>
+      <Route path="/reset-password/:id/:token" element={<ResetPassword />}></Route>
     </Route>
   )
 );
