@@ -35,8 +35,8 @@ const BestSellers = () => {
             <Product
               key={product.id} // Use product ID as key
               _id={product._id}
-              img={product.image} // Replace with the actual image path from the API response
-              productName={product.title}
+              image={product.image} // Replace with the actual image path from the API response
+              title={product.title}
               price={product.price}
               color={product.color}
               badge={product.badge}
