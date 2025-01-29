@@ -88,7 +88,7 @@ const ProductInfo = ({ productInfo }) => {
       {showPopup && (
         <CartPopup
           productInfo={productInfo}
-          qty={1}
+          qty={1}x
           setShowPopup={setShowPopup}
         />
       )}
