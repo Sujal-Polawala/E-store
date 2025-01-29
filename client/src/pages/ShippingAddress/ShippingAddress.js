@@ -21,6 +21,7 @@ const ShippingAddress = ({ cartItems, totalPrice, clearCart }) => {
     mobileno: "",
   });
   const [isUpdating, setIsUpdating] = useState(false);
+  const [shippingCharge, setShippingCharge] = useState(0);
   const [popup, setPopup] = useState({
     message: "",
     type: "",
@@ -95,21 +96,36 @@ const ShippingAddress = ({ cartItems, totalPrice, clearCart }) => {
     }
   };
 
+  useEffect(() => {
+    if (totalPrice <= 200) {
+      setShippingCharge(30);
+    } else if (totalPrice <= 400) {
+      setShippingCharge(25);
+    } else if (totalPrice > 401) {
+      setShippingCharge(20);
+    }
+  }, [totalPrice]);
+
+  totalPrice = totalPrice + shippingCharge;
+
   const handleCheckout = async () => {
     try {
       const stripe = await stripePromise;
-  
+
       // Create payment session
-      const stripeResponse = await axios.post("http://localhost:5000/api/create-payment", {
-        userId,
-        products: cartItems,
-        paymentMethod: "Visa",
-        totalPrice,
-        shippingAddress,
-      });
-  
+      const stripeResponse = await axios.post(
+        "http://localhost:5000/api/create-payment",
+        {
+          userId,
+          products: cartItems,
+          paymentMethod: "Visa",
+          totalPrice,
+          shippingAddress,
+        }
+      );
+
       const { sessionId, paymentId } = stripeResponse.data;
-  
+
       // Save the order data after payment session is created
       // await axios.post("http://localhost:5000/api/checkout", {
       //   userId,
@@ -118,16 +134,18 @@ const ShippingAddress = ({ cartItems, totalPrice, clearCart }) => {
       //   shippingAddress,
       //   paymentId,
       // });
-  
+
       // Clear the cart
       clearCart();
-  
+
       // Finalize payment
-      await axios.post("http://localhost:5000/api/finalize-payment", { sessionId: sessionId });
-  
+      await axios.post("http://localhost:5000/api/finalize-payment", {
+        sessionId: sessionId,
+      });
+
       // Redirect to Stripe Checkout
       const result = await stripe.redirectToCheckout({ sessionId });
-  
+
       if (result.error) {
         throw new Error(result.error.message);
       }
@@ -136,8 +154,7 @@ const ShippingAddress = ({ cartItems, totalPrice, clearCart }) => {
       alert("An error occurred. Please try again.");
     }
   };
-  
-  
+
   useEffect(() => {
     if (popup.show) {
       const timer = setTimeout(() => setPopup({ ...popup, show: false }), 3000);
@@ -254,9 +271,7 @@ const ShippingAddress = ({ cartItems, totalPrice, clearCart }) => {
           <span>Total Price:</span>
           <span>
             $
-            {cartItems.length > 0
-              ? (totalPrice + 5).toFixed(2)
-              : totalPrice.toFixed(2)}
+            {cartItems.length > 0 && (totalPrice)}
           </span>
         </div>
         <button
