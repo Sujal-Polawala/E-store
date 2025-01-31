@@ -20,6 +20,9 @@ const UserSchema = new mongoose.Schema({
   },
   loginAttempts: { type: Number, default: 0 },
   lockUntil: { type: Date, default: null },
+  isVerified: { type: Boolean, default: false },
+  verificationCode: { type: String },
+  isActive: { type: Boolean, default: true },
 });
 const User = mongoose.model("User", UserSchema, "User");
 
