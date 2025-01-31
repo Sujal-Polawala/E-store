@@ -1,10 +1,19 @@
 // /routes/productRoutes.js
 
 const express = require('express');
-const { insertProducts, getAllProduct, getAllProducts, fetchProductById, getFilters } = require('../../controllers/product/productController');
+const { insertProducts, getAllProduct, getAllProducts, fetchProductById, getFilters, addProduct, updateProductById, deleteProductById } = require('../../controllers/product/productController');
 const { getBadges} = require('../../controllers/product/badgeController')
 
 const router = express.Router();
+
+router.post("/api/products", addProduct);
+
+// Update a product by its ID
+router.put("/api/products/:id", updateProductById);
+
+// Delete a product by its ID
+
+router.delete("/api/products/:id", deleteProductById);
 
 // POST route to insert products
 router.post('/api/insert', insertProducts);
