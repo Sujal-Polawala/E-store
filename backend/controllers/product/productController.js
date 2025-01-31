@@ -5,6 +5,61 @@ const productsData = require('../../data/productsData'); // Importing the sample
 const mongoose = require('mongoose');
 const Category = require('../../models/category');
 
+const addProduct = async (req, res) => {
+  try {
+    const newProduct = new Product(req.body);
+    await newProduct.save();
+    res.status(201).send(newProduct);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
+
+// Update Product by Id
+
+const updateProductById = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const updatedData = req.body;
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId,
+      updatedData,
+      { new: true }
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).send("Product not found");
+    }
+
+    res
+      .status(200)
+      .json({ message: "Product updated successfully", updatedProduct });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Error updating product", details: error.message });
+  }
+};
+
+// Delete Product by Id
+
+const deleteProductById = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const deletedProduct = await Product.findByIdAndDelete(productId);
+
+    if (!deletedProduct) {
+      return res.status(404).send("Product not found");
+    }
+
+    res.status(200).json({ message: "Product deleted successfully" });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+// Get All Products
+
 // Function to insert multiple products
 const insertProducts = async (req, res) => {
   try {
@@ -42,16 +97,22 @@ const getFilters = async (req, res) => {
 
 const getAllProducts = async (req, res) => {
   try {
-    const { badge, category } = req.query;
+    const { badge, category, minPrice, maxPrice } = req.query;
     const query = {};
+
     if (badge) query.badge = badge;
     if (category) query.category = category;
+    if (minPrice && maxPrice) {
+      query.price = { $gte: parseFloat(minPrice), $lte: parseFloat(maxPrice) };
+    }
+
     const products = await Product.find(query);
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch products" });
   }
 };
+
 
 const fetchProductById = async (req, res) => {
   try {
@@ -84,4 +145,7 @@ module.exports = {
   getAllProducts,
   fetchProductById,
   getFilters, 
+  addProduct,
+  updateProductById,
+  deleteProductById
 };
