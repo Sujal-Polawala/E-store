@@ -1,10 +1,13 @@
 const express = require('express');
-const { placeOrder, getAllOrder, getOrderByUser, deleteOrder, getOrder, getOrderData, downloadOrder } = require('../../controllers/order/orderController');
+const { placeOrder, getAllOrder, getOrderByUser, deleteOrder, getOrder, getOrderData, downloadOrder, sendInvoiceEmail } = require('../../controllers/order/orderController');
 
 const router = express.Router();
 
 // Place an order
 router.post('/api/checkout', placeOrder);
+
+// Send invoice email
+router.post('/api/orders/invoice/email/:orderId', sendInvoiceEmail);
 
 // Get all orders
 router.get('/api/orders', getAllOrder);
