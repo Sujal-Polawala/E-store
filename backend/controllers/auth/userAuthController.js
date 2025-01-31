@@ -1,9 +1,14 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../../models/user");
+const PendingVerification = require("../../models/PendingVerification");
 const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
 dotenv.config();
+// const crypto = require("crypto");
+const {
+  Verification_Email_Template,
+} = require("../../Middleware/EmailTemplate");
 
 // Configure nodemailer transport
 const transporter = nodemailer.createTransport({
@@ -60,35 +65,104 @@ exports.register = async (req, res) => {
         .json({ message: "Username or email already exists" });
     }
 
+    const existingPending = await PendingVerification.findOne({ email });
+    if (existingPending) {
+      return res.status(400).json({
+        message:
+          "A verification email has already been sent. Please check your email.",
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new User({
+    const verificationCode = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
+    const pendingUser = new PendingVerification({
       username,
       password: hashedPassword,
       email,
       firstname,
       lastname,
+      verificationCode,
     });
-    const savedUser = await newUser.save();
 
-    // Send email to verify account creation
-    const emailSubject = "Welcome to Our Platform StyleVerse!";
-    const emailContent = `
-      <h1>Welcome, ${firstname} ${lastname}!</h1>
-      <p>Your account has been successfully created with the following details:</p>
-      <ul>
-        <li><strong>Username:</strong> ${username}</li>
-        <li><strong>Email:</strong> ${email}</li>
-      </ul>
-      <p>We're excited to have you onboard. You can now log in to your account and explore our platform.</p>
-      <p>If you have any questions, feel free to reach out to our support team.</p>
-      <p>Best regards,<br>The StyleVerse Team</p>
-    `;
+    await pendingUser.save();
+    // Send Verification Email
+    const emailSubject = "Verify Your Email";
+    const emailContent = Verification_Email_Template.replace(
+      "{verificationCode}",
+      verificationCode
+    );
     await sendEmail(email, emailSubject, emailContent);
 
-    res.status(201).json({ message: "User created successfully" });
+    res.status(201).json({
+      message:
+        "Verification email sent. Please check your email to complete registration.",
+    });
   } catch (error) {
     console.error("Error during registration:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Verify Email Controller
+exports.verifyEmail = async (req, res) => {
+  console.log("Received data:", req.body); // Debugging
+
+  const { email, code } = req.body;
+
+  if (!email || !code) {
+    return res
+      .status(400)
+      .json({ message: "Email and verification code are required." });
+  }
+
+  try {
+    const pendingUser = await PendingVerification.findOne({
+      email,
+      verificationCode: code,
+    });
+
+    if (!pendingUser) {
+      return res
+        .status(400)
+        .json({ message: "Invalid or expired verification code." });
+    }
+
+    //Create user in the main User collection
+    const newUser = new User({
+      username: pendingUser.username,
+      email: pendingUser.email,
+      firstname: pendingUser.firstname,
+      lastname: pendingUser.lastname,
+      password: pendingUser.password, // Already hashed
+      isVerified: true,
+    });
+
+    const savedUser = await newUser.save();
+    savedUser.userId = savedUser._id.toString();
+    await savedUser.save();
+
+    // Remove from PendingVerification collection
+    await PendingVerification.deleteOne({ email });
+    const emailSubject = "Welcome to Our Platform StyleVerse!";
+    const emailContent = `
+      <h1>Welcome, ${savedUser.firstname} ${savedUser.lastname}!</h1>
+      <p>Your account has been successfully created with the following details:</p>
+      <ul>
+        <li><strong>Username:</strong> ${savedUser.username}</li>
+        <li><strong>Email:</strong> ${savedUser.email}</li>
+      </ul>
+      <p>Now You can Log in. We're excited to have you onboard. You can now log in to your account and explore our platform.</p>
+      <p>If you have any questions, feel free to reach out to our support team.</p>
+      <p>Best regards,<br>The StyleVerse Team</p>`;
+    await sendEmail(email, emailSubject, emailContent);
+    res
+      .status(200)
+      .json({ message: "Email verified successfully. You can now log in." });
+  } catch (error) {
+    console.error("Error during verification:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -96,25 +170,25 @@ exports.register = async (req, res) => {
 // Login Controller
 const MAX_LOGIN_ATTEMPTS = 3;
 const LOCK_TIME = 5 * 60 * 1000; // 5 minutes in milliseconds
-
 exports.login = async (req, res) => {
   const { username, password } = req.body;
-  
+
   try {
     const user = await User.findOne({ username });
+
     if (!user) {
       return res.status(400).json({ message: "Invalid username or password" });
     }
 
-    // Check if account is locked
-    if (user.lockUntil && user.lockUntil > Date.now()) {
-      const remainingTime = Math.ceil((user.lockUntil - Date.now()) / 60000);
-      return res.status(403).json({ 
-        message: `Account locked. Try again in ${remainingTime} minutes.` 
-      });
+    // Check if the user is blocked
+    if (!user.isActive) {
+      return res.status(403).json({ message: "Your account has been blocked. Please contact support." });
     }
-    
-    const token = jwt.sign({ id: user._id }, "secret", { expiresIn: "1h" });
+
+    // Skip locked account check if the user is active
+    if (user.lockUntil && user.lockUntil > Date.now()) {
+      return res.status(403).json({ message: "Account locked. Try again later." });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
@@ -122,16 +196,15 @@ exports.login = async (req, res) => {
 
       // Lock account if max attempts reached
       if (user.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
-        user.lockUntil = Date.now() + LOCK_TIME;
+        user.lockUntil = Date.now() + LOCK_TIME; // Lock for 5 minutes
         await user.save();
 
-        // Send reset password email
-        // const resetLink = `http://localhost:3000/reset-password/${user._id}/${token}`;
+        // Send email notification (optional)
         const emailSubject = "Account Locked";
         const emailText = `Hello ${user.firstname},\n\nYour account has been locked due to multiple failed login attempts.\nThanks,\nThe StyleVerse Team.`;
         sendEmail(user.email, emailSubject, emailText);
 
-        return res.status(403).json({ message: "Account locked. We sent to your email." });
+        return res.status(403).json({ message: "Account locked. Please try again later." });
       }
 
       await user.save();
@@ -143,11 +216,12 @@ exports.login = async (req, res) => {
     user.lockUntil = null;
     await user.save();
 
-    // Send email notification after successful login
+    // Send email notification after successful login (optional)
     const emailSubject = "Successful Login Notification";
     const emailText = `Hello ${user.firstname} ${user.lastname},\n\nYou have successfully logged into your account.\nIf this wasn't you, please reset your password.\n\nThanks,\nThe StyleVerse Team.`;
     sendEmail(user.email, emailSubject, emailText);
 
+    const token = jwt.sign({ id: user._id }, "secret", { expiresIn: "1h" });
 
     res.status(200).json({
       message: "Login successful",
@@ -164,114 +238,6 @@ exports.login = async (req, res) => {
 };
 
 
-// Forgot Password Controller
-exports.forgotPass = async (req, res) => {
-  const { email } = req.body;
-  try {
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // Create a token with a 3-hour expiration
-    const token = jwt.sign({ id: user._id }, "secret", { expiresIn: "3h" });
-
-    // Configure email transporter
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
-
-    // Send email with reset link
-    
-    const resetLink = `http://localhost:3000/reset-password/${user._id}/${token}`;
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: user.email,
-      subject: "Reset Your Password",
-      html: `
-        <p>You requested a password reset. Click the link below to reset your password:</p>
-    <a href="${resetLink}" target="_self" rel="noreferrer noopener">${resetLink}</a>
-    <p>If you did not request this, please ignore this email.</p>
-      `,
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log("Email Error:", error);
-        return res.status(500).json({ message: "Failed to send email" });
-      }
-      return res.status(200).json({ message: "Reset link sent successfully" });
-    });
-  } catch (e) {
-    console.error("Error:", e);
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
-// Reset Password Controller
-exports.resetPass = async (req, res) => {
-  const { id, token } = req.params;
-  const { password } = req.body;
-
-  try {
-    // Verify the token and check expiration
-    const decoded = jwt.verify(token, "secret");
-
-    // Check if the token matches the user's ID
-    if (decoded.id !== id) {
-      return res.status(401).json({ message: "Invalid token or user ID" });
-    }
-
-    // Hash the new password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Update user's password in the database
-    const user = await User.findByIdAndUpdate(
-      { _id: id },
-      { password: hashedPassword },
-      { new: true }
-    );
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // Send a confirmation email
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
-
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: user.email,
-      subject: "Password Reset Successfully",
-      html: `
-        <p>Hello ${user.firstname+" "+user.lastname || "User"},</p>
-        <p>Your password has been reset successfully. If you did not perform this action, please contact our support StyleVerse team immediately.</p>
-      `,
-    };
-
-    await transporter.sendMail(mailOptions);
-
-    res.status(200).json({ message: "Password reset successfully and email sent." });
-  } catch (error) {
-    console.error("Error in resetPass:", error);
-
-    if (error.name === "TokenExpiredError") {
-      return res.status(401).json({ message: "Reset link expired. Please request a new one." });
-    }
-
-    res.status(500).json({ message: "Server error" });
-  }
-};
 
 
 exports.getUserDetails = async (req, res) => {
