@@ -1,11 +1,11 @@
 const express = require("express");
 const {
   register,
+  verifyEmail,
   login,
   getUserDetails,
-  forgotPass,
-  resetPass
 } = require("../../controllers/auth/userAuthController");
+const { forgotPass, resetPass } = require("../../controllers/auth/userAuthPass");
 
 const authMiddleware = require("../../Middleware/authMiddleware");
 
@@ -15,7 +15,7 @@ const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
-
+router.post("/api/verify-email", verifyEmail);
 // get user details
 router.get("/details", authMiddleware, getUserDetails);
 
