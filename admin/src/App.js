@@ -5,6 +5,7 @@ import UsersPage from './pages/UsersPage'
 import CrudPage from './pages/CrudPage'
 import Orders from './pages/Orders'
 import NewProductForm from './pages/NewProductForm'
+import AdminSellerRequestsPage from './pages/AdminSellerRequestPage'
 // import Navbar from './pages/Navbar'
 import {BrowserRouter as Router , Routes, Route} from 'react-router-dom'
 
@@ -20,6 +21,7 @@ function App() {
           <Route path="/admin/crud" element={<CrudPage />} />
           <Route path="/admin/orders" element={<Orders />} />
           <Route path="/admin/newproduct" element={<NewProductForm />} />
+          <Route path="/admin/sellerrequests" element={<AdminSellerRequestsPage />} />
         </Routes>
     </Router>
   );
