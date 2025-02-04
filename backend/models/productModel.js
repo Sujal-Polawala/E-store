@@ -19,6 +19,7 @@ const productSchema = new mongoose.Schema({
     rate: Number,
     count: Number,
   },
+  sellerId: { type: mongoose.Schema.Types.ObjectId, ref: "Seller" }, 
 });
 
 const Product = mongoose.model("Product", productSchema,"Product");
