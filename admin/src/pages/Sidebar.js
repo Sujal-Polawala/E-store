@@ -87,24 +87,6 @@ const Sidebar = () => {
                     Categories
                   </Link>
                 </li>
-                <li>
-                  <Link
-                    to="admin/collection"
-                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-                  >
-                    <HiOutlineCollection className="text-lg mr-3" />
-                    Collections
-                  </Link>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-                  >
-                    <BsTag className="text-lg mr-3" />
-                    Attributes
-                  </a>
-                </li>
               </ul>
             </div>
 
@@ -139,6 +121,23 @@ const Sidebar = () => {
                   >
                     <FaUserFriends className="text-lg mr-3" />
                     Users
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div className="mt-6">
+              <h3 className="text-sm font-bold text-gray-500 uppercase mb-2">
+                Sellers
+              </h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link
+                    to="/admin/sellerrequests"
+                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                  >
+                    <FaUserFriends className="text-lg mr-3" />
+                    Sellers
                   </Link>
                 </li>
               </ul>
