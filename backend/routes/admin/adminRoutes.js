@@ -3,6 +3,8 @@ const { adminLogin } = require('../../controllers/admin/adminAuthController')
 
 const { getTotalUsers, getTotalOrders, getTotalProducts, getStatus } = require('../../controllers/admin/dashboardController');
 
+const { approveRequest, getSellerRequests } = require('../../controllers/seller/sellerRequestController') 
+
 const router = express.Router();
 // admin login
  router.post('/api/admin/login', adminLogin);
@@ -12,5 +14,9 @@ const router = express.Router();
  router.get('/admin/total-orders', getTotalOrders);
  router.get('/admin/total-products', getTotalProducts);
 router.put('/admin/users/:userId/status', getStatus);
+
+// seller requests
+ router.get('/api/admin/seller-requests', getSellerRequests);
+ router.post('/api/admin/approve-request', approveRequest);
 
 module.exports = router;
