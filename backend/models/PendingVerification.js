@@ -7,6 +7,7 @@ const PendingVerificationSchema = new mongoose.Schema({
   lastname: { type: String, required: true },
   password: { type: String, required: true }, // Hashed password
   verificationCode: { type: String, required: true },
+  expiresAt: { type: Date, default: Date.now }, // Auto-delete after
   createdAt: { type: Date, default: Date.now, expires: 600 }, // Auto-delete after 10 minutes
 });
 
