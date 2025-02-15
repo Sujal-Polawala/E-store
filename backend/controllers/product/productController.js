@@ -4,14 +4,50 @@ const Product = require('../../models/productModel');
 const productsData = require('../../data/productsData'); // Importing the sample product data
 const mongoose = require('mongoose');
 const Category = require('../../models/category');
+const Seller = require('../../models/seller');
 
 const addProduct = async (req, res) => {
   try {
-    const newProduct = new Product(req.body);
+    const { sellerId, title, price, description, category, image, color, badge, rating } = req.body;
+
+    if (!sellerId) {
+      return res.status(400).send({ message: "Seller ID is required" });
+    }
+
+    // Find the last product to get the highest id
+    const lastProduct = await Product.findOne().sort({ id: -1 });
+
+    const newProduct = new Product({
+      id: lastProduct ? lastProduct.id + 1 : 1, // Increment last id, or start at 1
+      sellerId,
+      title,
+      price,
+      description,
+      category,
+      image,
+      color,
+      badge,
+      rating,
+    });
+
+    // Save product to database
     await newProduct.save();
+
+    // Update Seller's products array
+    const updatedSeller = await Seller.findByIdAndUpdate(
+      sellerId,
+      { $push: { products: newProduct._id } }, // Push new product ID into seller's products array
+      { new: true } // Return updated document
+    );
+
+    if (!updatedSeller) {
+      return res.status(404).send({ message: "Seller not found" });
+    }
+
     res.status(201).send(newProduct);
   } catch (error) {
-    res.status(400).send(error);
+    console.error("Error adding product:", error);
+    res.status(500).send({ message: "Error adding product" });
   }
 };
 
@@ -97,22 +133,22 @@ const getFilters = async (req, res) => {
 
 const getAllProducts = async (req, res) => {
   try {
-    const { badge, category, minPrice, maxPrice } = req.query;
+    const { sellerId, badge, category, minPrice, maxPrice } = req.query;
     const query = {};
 
+    if (sellerId) query.sellerId = sellerId; // Apply seller filter only if provided
     if (badge) query.badge = badge;
     if (category) query.category = category;
     if (minPrice && maxPrice) {
       query.price = { $gte: parseFloat(minPrice), $lte: parseFloat(maxPrice) };
     }
 
-    const products = await Product.find(query);
+    const products = await Product.find(query).populate("sellerId", "name");
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch products" });
   }
 };
-
 
 const fetchProductById = async (req, res) => {
   try {
@@ -124,13 +160,11 @@ const fetchProductById = async (req, res) => {
       return res.status(400).json({ error: "Invalid product ID format." });
     }
 
-    const product = await Product.findOne({ _id: id }); // Query using ObjectId
+    const product = await Product.findById(id); // Query using ObjectId
     if (!product) {
       console.log("Product not found");
       return res.status(404).json({ error: "Product not found." });
     }
-
-    console.log("Product fetched:", product);
     res.status(200).json(product); // Return the product in JSON format
   } catch (error) {
     console.error("Error in fetchProductById:", error);
