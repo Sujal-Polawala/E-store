@@ -114,6 +114,7 @@
 import React from "react";
 import { Link } from "react-router-dom"
 import Sidebar from "./Sidebar";
+import Avatar from "./Avatar";
 
 const Dashboard = () => {
   return (
@@ -124,17 +125,8 @@ const Dashboard = () => {
       {/* Main Content */}
       <main className="flex-1 p-8">
         {/* Header */}
-        <header className="flex items-center justify-between mb-6">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search"
-              className="px-4 py-2 border border-gray-300 rounded-md w-80 focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-          </div>
-          <div className="bg-teal-500 text-white rounded-full h-10 w-10 flex items-center justify-center">
-            a
-          </div>
+        <header className="flex items-center justify-end mb-6">
+          <Avatar />
         </header>
 
         {/* Dashboard Content */}
