@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import EditProduct from "./EditProductForm";
 import Spinner from "./Spinner";
@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import Pagination from "./Pagination";
 import { Pencil, Trash, Plus, X } from "lucide-react";
 import PopupMsg from "./PopupMsg";
+import { SellerContext } from "../context/sellerContext";
 
 const CrudPage = () => {
   const [products, setProducts] = useState([]);
@@ -14,6 +15,9 @@ const CrudPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const { state } = useContext(SellerContext);
+  const { seller } = state;
+  const sellerId = seller?.sellerId;
   const itemsPerPage = 6;
   const [popup, setPopup] = useState({
     message: "",
@@ -22,9 +26,13 @@ const CrudPage = () => {
   });
 
   const fetchProducts = async () => {
+    if(!sellerId) return;
     try {
-      const response = await axios.get("http://localhost:5000/api/products");
+      const response = await axios.get(
+        `http://localhost:5000/api/products?sellerId=${sellerId}`
+      );
       setProducts(response.data);
+      console.log(response.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -34,10 +42,18 @@ const CrudPage = () => {
   const deleteProduct = async (id) => {
     try {
       await axios.delete(`http://localhost:5000/api/products/${id}`);
-      setPopup({ message: "Product deleted successfully", type: "success", show: true });
+      setPopup({
+        message: "Product deleted successfully",
+        type: "success",
+        show: true,
+      });
       fetchProducts();
     } catch (error) {
-      setPopup({ message: "Error deleting product", type: "error", show: true });
+      setPopup({
+        message: "Error deleting product",
+        type: "error",
+        show: true,
+      });
       console.error("Error deleting product:", error);
     }
   };
@@ -64,11 +80,10 @@ const CrudPage = () => {
 
   const cancelUpdate = () => {
     setPopup({
-      message: 
-      "Product update cancelled",
+      message: "Product update cancelled",
       type: "error",
       show: true,
-    })
+    });
     setEditingProduct(null);
   };
 
@@ -83,15 +98,19 @@ const CrudPage = () => {
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    if (sellerId) {
+      fetchProducts();
+    }
+  }, [sellerId]);
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-100 to-gray-300 p-6">
       <div className="max-w-7xl mx-auto bg-white p-8 rounded-xl shadow-lg">
         {popup.show && <PopupMsg message={popup.message} type={popup.type} />}
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold text-gray-800">Product Management</h2>
+          <h2 className="text-3xl font-bold text-gray-800">
+            Product Management
+          </h2>
           <Link
             to="/seller/add-product"
             className="bg-indigo-600 text-white px-5 py-3 rounded-lg shadow-md flex items-center gap-2 hover:bg-indigo-700 transition-transform transform hover:scale-105"
@@ -121,14 +140,14 @@ const CrudPage = () => {
                     <th className="py-4 px-6">Category</th>
                     <th className="py-4 px-6">Quantity</th>
                     <th className="py-4 px-6">Image</th>
-                    <th className="py-4 px-6">Seller</th>
+                    {/* <th className="py-4 px-6">Seller</th> */}
                     <th className="py-4 px-6 text-center">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="text-gray-700 text-sm">
                   {currentProducts.map((product) => (
                     <tr key={product.id} className="border-b hover:bg-gray-100">
-                      <td className="py-4 px-6">{product.id}</td>
+                      <td className="py-4 px-6">{product._id}</td>
                       <td className="py-4 px-6">{product.title}</td>
                       <td className="py-4 px-6">${product.price}</td>
                       <td className="py-4 px-6">{product.category || "-"}</td>
@@ -141,7 +160,9 @@ const CrudPage = () => {
                           onClick={() => openImageModal(product.image)}
                         />
                       </td>
-                      <td className="py-4 px-6">{product.sellerId ? product.sellerId.name : "Unknown"}</td>
+                      {/* <td className="py-4 px-6">
+                        {product.sellerId ? product.sellerId.name : "Unknown"}
+                      </td> */}
                       <td className="py-4 px-6 flex justify-center gap-4">
                         <button
                           onClick={() => editProduct(product)}
@@ -164,7 +185,12 @@ const CrudPage = () => {
           </>
         )}
 
-        <Pagination currentPage={currentPage} totalPages={totalPages} loading={loading} handlePageChange={handlePageChange} />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          loading={loading}
+          handlePageChange={handlePageChange}
+        />
         {isImageModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
             <div className="relative bg-white p-4 rounded-lg max-w-2xl">
@@ -174,7 +200,11 @@ const CrudPage = () => {
               >
                 <X size={20} />
               </button>
-              <img src={selectedImage} alt="Selected" className="w-full h-auto max-h-96 object-contain rounded-lg" />
+              <img
+                src={selectedImage}
+                alt="Selected"
+                className="w-full h-auto max-h-96 object-contain rounded-lg"
+              />
             </div>
           </div>
         )}
