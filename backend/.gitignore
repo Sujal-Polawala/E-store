@@ -13,8 +13,9 @@
 
 # misc
 .DS_Store
-invoices
 .env
+invoices
+node_modules
 .env.local
 .env.development.local
 .env.test.local
