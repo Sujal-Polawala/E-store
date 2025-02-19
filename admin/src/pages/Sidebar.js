@@ -8,14 +8,14 @@ import {
 } from "react-icons/ai";
 import { BsBoxSeam, BsTag, BsCart4 } from "react-icons/bs";
 import { FaUserFriends, FaLink } from "react-icons/fa";
-import { HiOutlineCollection } from "react-icons/hi";
-import SearchBar from "./SearchBar";
-import Avatar from "./Avatar";
+// import { HiOutlineCollection } from "react-icons/hi";
+// import SearchBar from "./SearchBar";
+// import Avatar from "./Avatar";
 
 const Sidebar = () => {
   // const [active, setActive] = useState(true); 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col min-h-screen">
       {/* Top Bar with SearchBar and Avatar */}
       {/* <header className="flex items-center justify-center bg-white shadow-md p-4">
         <SearchBar />
@@ -40,15 +40,6 @@ const Sidebar = () => {
                   >
                     <AiFillHome className="text-lg mr-3" />
                     Dashboard
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/admin/newproduct"
-                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-                  >
-                    <AiOutlinePlus className="text-lg mr-3" />
-                    New Product
                   </Link>
                 </li>
                 <li>
