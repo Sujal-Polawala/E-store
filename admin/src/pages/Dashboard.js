@@ -1,128 +1,57 @@
-// import React, { useEffect, useState } from 'react';
-// import axios from 'axios';
-// import { Link } from 'react-router-dom';
-// import { FiUsers, FiFileText, FiShoppingCart } from 'react-icons/fi';
-
-// const AdminDashboard = () => {
-//   const [totalUsers, setTotalUsers] = useState(0);
-//   const [totalProducts, setTotalProducts] = useState(0);
-//   const [totalOrders, setTotalOrders] = useState(0); 
-//   const [ordersToday, setOrdersToday] = useState(45); 
-
-//   useEffect(() => {
-//     const fetchTotalUsers = async () => {
-//       try {
-//         const res = await axios.get('http://localhost:5000/admin/total-users');
-//         setTotalUsers(res.data.totalUsers);
-//       } catch (error) {
-//         console.error('Error fetching total users:', error);
-//       }
-//     };
-
-//     const fetchTotalProducts = async () => {
-//       try {
-//         const res = await axios.get('http://localhost:5000/admin/total-products');
-//         setTotalProducts(res.data.totalProducts);
-//       } catch (error) {
-//         console.error('Error fetching total products:', error);
-//       }
-//     };
-
-//     const fetchTotalOrders = async () => {
-//       try {
-//         const res = await axios.get('http://localhost:5000/admin/total-orders');
-//         setTotalOrders(res.data.totalOrders);
-//       } catch (error) {
-//         console.error('Error fetching total orders:', error);
-//       }
-//     };
-
-//     fetchTotalUsers();
-//     fetchTotalProducts();
-//     fetchTotalOrders();
-//   }, []);
-
-//   return (
-//     <div className="flex mt-5 min-h-screen bg-gray-50">
-//       {/* Sidebar */}
-//       <div className="w-64 bg-gradient-to-r from-blue-600 to-indigo-500 text-white p-6">
-//         <h2 className="text-3xl font-bold mb-6">Admin Panel</h2>
-//         <nav className="space-y-4">
-//           <Link to="/admin/users" className="block py-3 px-4 rounded-lg hover:bg-indigo-400 transition">
-//             Total Users
-//           </Link>
-//           <Link to="/admin/crud" className="block py-3 px-4 rounded-lg hover:bg-indigo-400 transition">
-//             CRUD Operations
-//           </Link>
-//           <Link to="/admin/orders" className="block py-3 px-4 rounded-lg hover:bg-indigo-400 transition">
-//             View Orders
-//           </Link>
-//         </nav>
-//       </div>
-
-//       {/* Main Content */}
-//       <div className="flex-1 p-10">
-//         <h1 className="text-5xl font-semibold text-gray-800 mb-8">Admin Dashboard</h1>
-
-//         {/* Statistics Cards */}
-//         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-//           <div className="p-6 bg-white rounded-xl shadow-lg flex items-center hover:shadow-xl transition-shadow">
-//             <FiUsers className="text-5xl text-blue-600 mr-4" />
-//             <div>
-//               <h3 className="text-lg font-semibold text-gray-700">Total Users</h3>
-//               <p className="text-gray-500 text-2xl">{totalUsers}</p>
-//             </div>
-//           </div>
-//           <div className="p-6 bg-white rounded-xl shadow-lg flex items-center hover:shadow-xl transition-shadow">
-//             <FiFileText className="text-5xl text-green-600 mr-4" />
-//             <div>
-//               <h3 className="text-lg font-semibold text-gray-700">Total Products</h3>
-//               <p className="text-gray-500 text-2xl">{totalProducts}</p>
-//             </div>
-//           </div>
-//           <div className="p-6 bg-white rounded-xl shadow-lg flex items-center hover:shadow-xl transition-shadow">
-//             <FiShoppingCart className="text-5xl text-red-600 mr-4" />
-//             <div>
-//               <h3 className="text-lg font-semibold text-gray-700">Total Orders</h3>
-//               <p className="text-gray-500 text-2xl">{totalOrders}</p>
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Quick Links */}
-//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-//           <Link to="/admin/users" className="p-6 bg-white shadow-md rounded-xl text-center hover:shadow-lg transition">
-//             <h2 className="text-xl font-semibold mb-4 text-gray-800">Total Users</h2>
-//             <p className="text-gray-500">View and manage users.</p>
-//           </Link>
-//           <Link to="/admin/crud" className="p-6 bg-white shadow-md rounded-xl text-center hover:shadow-lg transition">
-//             <h2 className="text-xl font-semibold mb-4 text-gray-800">CRUD Operations</h2>
-//             <p className="text-gray-500">Manage products and inventory.</p>
-//           </Link>
-//           <Link to="/admin/orders" className="p-6 bg-white shadow-md rounded-xl text-center hover:shadow-lg transition">
-//             <h2 className="text-xl font-semibold mb-4 text-gray-800">View Orders</h2>
-//             <p className="text-gray-500">Track and manage orders.</p>
-//           </Link>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default AdminDashboard;
-
 import React from "react";
-import { Link } from "react-router-dom"
+import { useQuery, gql } from "@apollo/client";
 import Sidebar from "./Sidebar";
 import Avatar from "./Avatar";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+
+// GraphQL Query to Fetch Admin Dashboard Data
+const GET_ADMIN_DASHBOARD = gql`
+  query GetAdminDashboard {
+    totalOrders
+    totalRevenue
+    totalUsers
+    totalSellers
+    sellers {
+      _id
+      name
+      orders {
+        _id
+        totalPrice
+        createdAt
+      }
+      totalSales
+    }
+    bestSellingProducts {
+      _id
+      title
+      sales
+    }
+  }
+`;
 
 const Dashboard = () => {
+  const { loading, error, data } = useQuery(GET_ADMIN_DASHBOARD);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+  // Prepare data for the chart (Revenue per Seller)
+  const sellerRevenueData = data.sellers.map((seller) => ({
+    name: seller.name, // Seller name on the X-axis
+    revenue: seller.totalSales, // Revenue of the seller
+  }));
+
   return (
     <div className="min-h-screen bg-gray-100 flex">
-      {/* Sidebar */}
       <Sidebar />
-
-      {/* Main Content */}
       <main className="flex-1 p-8">
         {/* Header */}
         <header className="flex items-center justify-end mb-6">
@@ -130,63 +59,121 @@ const Dashboard = () => {
         </header>
 
         {/* Dashboard Content */}
-        <div className="grid grid-cols-3 gap-6">
-          {/* Sale Statistics */}
-          <div className="col-span-2 bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-bold mb-4 text-gray-800">Sale Statistics</h2>
-            <div className="flex justify-between text-sm text-gray-500 mb-4">
-              <span className="cursor-pointer hover:underline">Daily</span>
-              <span className="cursor-pointer hover:underline">Weekly</span>
-              <span className="cursor-pointer hover:underline">Monthly</span>
-            </div>
-            <div className="h-48 bg-gray-100 flex items-center justify-center text-gray-400">
-              Graph Placeholder
+        <div className="flex items-center justify-center py-6">
+          <h2 className="text-4xl font-bold text-white bg-black px-6 py-3 rounded-lg shadow-lg">
+            Admin Dashboard
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Total Revenue */}
+          <div className="bg-gradient-to-r from-green-400 to-green-600 p-8 rounded-xl shadow-xl text-white">
+            <h2 className="text-lg font-bold">Total Revenue</h2>
+            <p className="text-3xl font-semibold mt-4">
+              ${data.totalRevenue.toFixed(2)}
+            </p>
+
+            {/* Display Seller-wise Revenue */}
+            <div className="mt-4">
+              <h3 className="font-semibold text-lg">Revenue by Seller</h3>
+              {data.sellers.map((seller) => (
+                <div key={seller._id} className="flex justify-between mt-2">
+                  <span>{seller.name}</span>
+                  <span className="font-semibold">
+                    ${seller.totalSales.toFixed(2)}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Lifetime Sales */}
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-bold mb-4 text-gray-800">Lifetime Sales</h2>
-            <ul className="text-sm text-gray-500 space-y-2">
-              <li>0 orders</li>
-              <li>$0.00 lifetime sale</li>
-              <li>0% of orders completed</li>
-              <li>0% of orders cancelled</li>
-            </ul>
-            <div className="mt-6 h-32 w-32 mx-auto relative">
-              <svg className="w-full h-full">
-                <circle
-                  cx="50%"
-                  cy="50%"
-                  r="40%"
-                  fill="none"
-                  stroke="#e5e7eb"
-                  strokeWidth="10"
-                />
-                <circle
-                  cx="50%"
-                  cy="50%"
-                  r="40%"
-                  fill="none"
-                  stroke="#38b2ac"
-                  strokeWidth="10"
-                  strokeDasharray="100"
-                  strokeDashoffset="50"
-                />
-              </svg>
-              <span className="absolute inset-0 flex items-center justify-center text-sm text-gray-700">
-                0%
-              </span>
-            </div>
+          {/* Total Orders */}
+          <div className="bg-gradient-to-r from-blue-400 to-blue-600 p-8 rounded-xl shadow-xl text-white">
+            <h2 className="text-lg font-bold">Total Orders</h2>
+            <p className="text-3xl font-semibold mt-4">{data.totalOrders}</p>
+          </div>
+
+          {/* Total Users */}
+          <div className="bg-gradient-to-r from-indigo-400 to-indigo-600 p-8 rounded-xl shadow-xl text-white">
+            <h2 className="text-lg font-bold">Total Users</h2>
+            <p className="text-3xl font-semibold mt-4">{data.totalUsers}</p>
+          </div>
+
+          {/* Total Sellers */}
+          <div className="bg-gradient-to-r from-purple-400 to-purple-600 p-8 rounded-xl shadow-xl text-white">
+            <h2 className="text-lg font-bold">Total Sellers</h2>
+            <p className="text-3xl font-semibold mt-4">{data.totalSellers}</p>
           </div>
         </div>
 
-        {/* Best Sellers */}
+        {/* Seller Revenue Chart */}
         <div className="mt-6 bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-lg font-bold text-gray-800">Best Sellers</h2>
-          <p className="text-sm text-gray-500 mt-2">
-            Looks like you just started. No bestsellers yet.
-          </p>
+          <h2 className="text-lg font-bold text-gray-800 mb-4">
+            Seller Revenue Overview
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={sellerRevenueData}>
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="revenue" fill="#8884d8" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Other sections remain unchanged */}
+        {/* Sellers List */}
+        <div className="mt-6 bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-lg font-bold text-gray-800">Sellers Overview</h2>
+          <ul className="text-sm text-gray-600 mt-2 space-y-4">
+            {data.sellers.map((seller) => {
+              return (
+                <li
+                  key={seller._id}
+                  className="bg-gray-50 p-4 rounded-lg shadow-md"
+                >
+                  <h3 className="font-bold text-lg text-gray-800">
+                    {seller.name}
+                  </h3>
+                  <p className="text-gray-600">
+                    Total Sales: ${seller.totalSales}
+                  </p>{" "}
+                  {/* Display totalSales */}
+                  <h4 className="mt-2 font-semibold text-gray-700">Orders:</h4>
+                  <ul className="mt-2 text-sm text-gray-600">
+                    {seller.orders.length > 0 ? (
+                      seller.orders.map((order) => (
+                        <li key={order._id} className="flex justify-between">
+                          <span>OrderId: #{order._id}</span>
+                          <span className="font-semibold">
+                            ${seller.totalSales}
+                          </span>
+                        </li>
+                      ))
+                    ) : (
+                      <li>No orders found for this seller</li>
+                    )}
+                  </ul>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+
+        {/* Best Selling Products */}
+        <div className="mt-6 bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-lg font-bold text-gray-800">
+            Best Selling Products
+          </h2>
+          <ul className="text-sm text-gray-600 mt-2 space-y-2">
+            {data.bestSellingProducts.map((product) => (
+              <li key={product._id} className="flex justify-between">
+                <span>{product.title}</span>
+                <span className="font-semibold">{product.sales} sales</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </main>
     </div>
