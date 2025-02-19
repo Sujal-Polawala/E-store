@@ -11,6 +11,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "apollo-server-express": "^3.13.0",
     "axios": "^1.7.8",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
@@ -20,6 +21,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.19.2",
     "fs": "^0.0.1-security",
+    "graphql": "^16.10.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.3",
     "moongoose": "^0.0.5",
