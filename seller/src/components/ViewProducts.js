@@ -139,6 +139,7 @@ const CrudPage = () => {
                     <th className="py-4 px-6">Price</th>
                     <th className="py-4 px-6">Category</th>
                     <th className="py-4 px-6">Quantity</th>
+                    <th className="py-4 px-6">Seller Name</th>
                     <th className="py-4 px-6">Image</th>
                     {/* <th className="py-4 px-6">Seller</th> */}
                     <th className="py-4 px-6 text-center">Actions</th>
@@ -151,7 +152,8 @@ const CrudPage = () => {
                       <td className="py-4 px-6">{product.title}</td>
                       <td className="py-4 px-6">${product.price}</td>
                       <td className="py-4 px-6">{product.category || "-"}</td>
-                      <td className="py-4 px-6">{product.rating.count}</td>
+                      <td className="py-4 px-6">{product.quantity}</td>
+                      <td className="py-4 px-6">{product.sellerId.name}</td>
                       <td className="py-4 px-6">
                         <img
                           src={product.image}
