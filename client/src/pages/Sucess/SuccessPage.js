@@ -156,7 +156,7 @@ const SuccessPage = () => {
 
         <div className="mt-6 space-y-4">
           <button
-            onClick={() => navigate("/myorders")}
+            onClick={() => navigate("/profile/myorders")}
             className="w-full bg-gradient-to-r from-green-400 to-green-600 text-white py-3 rounded-lg hover:from-green-500 hover:to-green-700 transition ease-in-out duration-300 shadow-md"
           >
             View My Orders
