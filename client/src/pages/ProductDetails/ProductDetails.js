@@ -10,11 +10,8 @@ const ProductDetails = () => {
   const { id } = useParams();
   const location = useLocation();
   const [prevLocation, setPrevLocation] = useState("");
-  const [productInfo, setProductInfo] = useState([]);
-
-  // useEffect(() => {
-  //   setPrevLocation(location.pathname);
-  // }, [location]);
+  const [productInfo, setProductInfo] = useState({});
+  const [mainImage, setMainImage] = useState("");
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -22,6 +19,10 @@ const ProductDetails = () => {
         const response = await axios.get(`http://localhost:5000/products/${id}`);
         console.log("Fetched Product:", response.data);
         setProductInfo(response.data);
+
+        // Check if front image exists, otherwise fallback to product.image
+        const frontImage = response.data.images?.find((image) => image.type === "front")?.url;
+        setMainImage(frontImage || response.data.image); // Use front image if available, else fallback to product.image
       } catch (error) {
         console.error("Error fetching product details:", error);
       }
@@ -40,14 +41,20 @@ const ProductDetails = () => {
           <div className="h-full">
             <ProductsOnSale />
           </div>
-          <div className="h-full xl:col-span-2">
-            <img
-              className="w-full h-full object-cover"
-              src={productInfo.image}
-              alt={productInfo.image}
-            />
+          <div className="h-full xl:col-span-2 flex justify-center items-center">
+            {/* Display Main Product Image with Hover Zoom Effect */}
+            {mainImage && (
+              <div className="relative group w-full max-w-md mx-auto">
+                <img
+                  className="w-full max-h-96 object-contain rounded-lg shadow-lg transition-transform duration-500 ease-in-out transform group-hover:scale-110"
+                  src={mainImage}
+                  alt="Product Main"
+                />
+              </div>
+            )}
           </div>
           <div className="h-full w-full md:col-span-2 xl:col-span-3 xl:p-14 flex flex-col gap-6 justify-center">
+            {/* Product Description */}
             <ProductInfo productInfo={productInfo} />
           </div>
         </div>
