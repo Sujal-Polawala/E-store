@@ -8,7 +8,7 @@ const EditProduct = ({ product, fetchProducts, cancelUpdate }) => {
     title: product.title || "",
     description: product.description || "",
     price: product.price || 0,
-    rating: { count: product.rating.count || 0 },
+    quantity: product.quantity || 0,
     image: product.image || "",
     category: product.category || "",
     badge: product.badge || "Popular", // Default value
@@ -49,7 +49,7 @@ const EditProduct = ({ product, fetchProducts, cancelUpdate }) => {
       !editingProduct.title ||
       !editingProduct.description ||
       !editingProduct.price ||
-      !editingProduct.rating.count ||
+      !editingProduct.quantity ||
       !editingProduct.category ||
       !editingProduct.image ||
       !editingProduct.badge
@@ -163,11 +163,11 @@ const EditProduct = ({ product, fetchProducts, cancelUpdate }) => {
               <label className="block text-sm font-medium text-gray-700">Quantity</label>
               <input
                 type="number"
-                value={editingProduct.rating.count}
+                value={editingProduct.quantity}
                 onChange={(e) =>
                   setEditingProduct({
                     ...editingProduct,
-                    rating: { count: parseInt(e.target.value, 10) },
+                    quantity: parseInt(e.target.value),
                   })
                 }
                 className="border border-gray-300 p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
