@@ -9,11 +9,12 @@ const Shop = () => {
   const [itemsPerPage, setItemsPerPage] = useState(12);
   const [selectedBadge, setSelectedBadge] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedPriceRange, setSelectedPriceRange] = useState(null); // For price filter
   const [clearFilters, setClearFilters] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const location = useLocation();
 
-  const [prevLocation, setPrevLocation] = useState("")
+  const [prevLocation, setPrevLocation] = useState("");
 
   const itemsPerPageFromBanner = (itemsPerPage) => {
     setItemsPerPage(itemsPerPage);
@@ -27,16 +28,22 @@ const Shop = () => {
     setSelectedCategory(category);
   };
 
+  const handlePriceFilter = (priceRange) => {
+    setSelectedPriceRange(priceRange); // Set selected price range
+  };
+
   const clearAllFilters = () => {
     setSelectedBadge("");
     setSelectedCategory("");
+    setSelectedPriceRange(""); // Reset price filter
     setClearFilters(true);
     setTimeout(() => setClearFilters(false), 100);
   };
 
   useEffect(() => {
-    // Fetch products here if necessary when filters change.
-  }, [selectedBadge, selectedCategory]);
+    // Fetch products here if necessary when filters change
+    // Pass selectedPriceRange to the backend API
+  }, [selectedBadge, selectedCategory, selectedPriceRange]);
 
   const toggleFilters = () => {
     setShowFilters(!showFilters);
@@ -44,9 +51,8 @@ const Shop = () => {
 
   return (
     <div className="max-w-container mx-auto px-4">
-      <Breadcrumbs title="Products" prevLocation={prevLocation}/>
+      <Breadcrumbs title="Products" prevLocation={prevLocation} />
       <div className="w-full h-full pb-20">
-        {/* Button to toggle filter visibility */}
         <button
           className="md:hidden p-2 bg-gray-800 text-white mb-4"
           onClick={toggleFilters}
@@ -54,17 +60,15 @@ const Shop = () => {
           {showFilters ? "Hide Filters" : "Show Filters"}
         </button>
 
-        {/* Filters section */}
         <div className="flex w-full md:flex-row flex-col gap-6">
-          {/* Sidebar: Visible on desktop (md) */}
           <div className={`w-full ${showFilters ? "block" : "hidden"} md:block md:w-[25%]`}>
             <ShopSideNav
               onCategoryFilter={setSelectedCategory}
               clearFilters={clearFilters}
+              onPriceFilter={handlePriceFilter}
             />
           </div>
 
-          {/* Main content section */}
           <div className="w-full md:w-[75%] h-full flex flex-col gap-10">
             <ProductBanner
               itemsPerPageFromBanner={itemsPerPageFromBanner}
@@ -72,14 +76,18 @@ const Shop = () => {
               setSelectedBadge={setSelectedBadge}
               setSelectedCategory={setSelectedCategory}
               onCategoryFilter={handleCategoryFilter}
+              onPriceFilter={handlePriceFilter}
+              setSelectedPriceRange={setSelectedPriceRange}
               clearAllFilters={clearAllFilters}
             />
             <Pagination
               itemsPerPage={itemsPerPage}
               selectedBadge={selectedBadge}
               selectedCategory={selectedCategory}
+              selectedPriceRange={selectedPriceRange} // Pass selected price range to Pagination
               setSelectedBadge={setSelectedBadge}
               setSelectedCategory={setSelectedCategory}
+              setSelectedPriceRange={setSelectedPriceRange}
             />
           </div>
         </div>
