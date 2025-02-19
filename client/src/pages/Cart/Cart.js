@@ -35,6 +35,7 @@ const Cart = () => {
           `http://localhost:5000/api/cart/${userId}`
         );
         setCartItems(response.data);
+        console.log("Cart items:", response.data);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching cart items:", error);
@@ -88,20 +89,63 @@ const Cart = () => {
     }
   };
   
-  const handleQuantityChange = (itemId, action) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item._id === itemId
-    ? {
-      ...item,
-      quantity:
-      action === "increment"
-      ? item.quantity + 1
-                  : Math.max(1, item.quantity - 1),
-                }
-                : item
-              )
-    );
+  const handleQuantityChange = async (itemId, action) => {
+    try {
+      console.log("Sending request for itemId:", itemId);
+  
+      // Fetch product details
+      const response = await axios.get(`http://localhost:5000/products/${itemId}`);
+      const product = response.data;
+  
+      let updatedCartItems = cartItems.map((item) => {
+        if (item.productId === itemId) {
+          let newQuantity = action === "increment" ? item.quantity + 1 : Math.max(1, item.quantity - 1);
+  
+          // Check if requested quantity is beyond stock limits
+          if (newQuantity > product.rating.count) {
+            // Always show popup when the user tries to increase beyond stock
+            setPopup({ 
+              message: "",
+              type: "",
+              show: false,
+            })
+            setTimeout(() => {
+            setPopup({
+              message: `Only ${product.rating.count} items available in stock!`,
+              type: "error",
+              show: true,
+            });
+          }, 100);
+            return item; // Keep the existing quantity
+          }
+  
+          return { ...item, quantity: newQuantity }; // Update quantity in state
+        }
+        return item;
+      });
+  
+      // Update cart items state
+      setCartItems(updatedCartItems);
+  
+      // Send updated quantity to backend (only if valid)
+      const updatedQuantity = updatedCartItems.find((item) => item.productId === itemId)?.quantity;
+  
+      if (updatedQuantity !== undefined) {
+        await axios.put(`http://localhost:5000/api/cart/update`, {
+          userId: userId,
+          productId: itemId,
+          quantity: updatedQuantity,
+        });
+      }
+  
+    } catch (error) {
+      console.error("Error updating cart item quantity:", error);
+      setPopup({
+        message: "Error updating cart item quantity",
+        type: "error",
+        show: true,
+      });
+    }
   };
   
   const clearCart = async () => {
