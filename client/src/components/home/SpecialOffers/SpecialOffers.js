@@ -41,9 +41,9 @@ const SpecialOffers = () => {
               image={product.image}
               title={product.title}
               price={product.price}
-              color={product.color}
               badge={product.badge}
               des={product.description}
+              category={product.category}
             />
           ))
         )}
