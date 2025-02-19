@@ -37,36 +37,38 @@ const SignUp = () => {
       await axios.post("http://localhost:5000/register", {
         username,
         password,
+        confirmPassword,
         email,
         firstname,
         lastname,
       });
-
+    
       setPopup({
-        message: "Registration successful! You can now log in.",
+        message: "🎉 Registration successful! We’ve sent a verification email to your inbox. Please check your email to verify your account.",
         type: "success",
         show: true,
       });
-
+    
       setUsername("");
       setFirstname("");
       setLastname("");
       setEmail("");
       setPassword("");
       setConfirmPassword("");
-
+    
       setTimeout(() => {
-        navigate("/signin");
-      }, 2000);
+        localStorage.setItem("verificationEmail", email);
+        navigate(`/verify-email?email=${email}`);
+      }, 100);
     } catch (error) {
       setPopup({
-        message: "User already exists. Please login!",
+        message: "😕 It seems that the user already exists. Please login to continue!",
         type: "error",
         show: true,
       });
       setIsUserExist(false);
     }
-  };
+  }    
 
   return (
     <div className="w-full h-screen flex items-center justify-center bg-gray-100">
