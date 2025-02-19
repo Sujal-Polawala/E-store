@@ -4,7 +4,7 @@ import { ImList } from "react-icons/im";
 import { GoTriangleDown } from "react-icons/go";
 import axios from "axios";
 
-const ProductBanner = ({ onBadgeFilter, itemsPerPageFromBanner, setSelectedBadge, setSelectedCategory, onCategoryFilter, clearAllFilters }) => {
+const ProductBanner = ({ onBadgeFilter, itemsPerPageFromBanner, setSelectedBadge, setSelectedCategory, onCategoryFilter, clearAllFilters, onPriceFilter, setSelectedPriceRange }) => {
   const [badges, setBadges] = useState([]);
   const [selectedBadge, setSelectedBadgeState] = useState("select");
   const [gridViewActive, setGridViewActive] = useState(true);
@@ -37,10 +37,12 @@ const ProductBanner = ({ onBadgeFilter, itemsPerPageFromBanner, setSelectedBadge
     setSelectedBadgeState("select");
     setSelectedBadge("");
     setSelectedCategory(null);
+    setSelectedPriceRange(null);
 
     window.history.pushState({}, "", window.location.pathname); 
     onBadgeFilter("select");
     onCategoryFilter(""); 
+    onPriceFilter("");
   };
 
   const handleClearAllFilters = () => {
