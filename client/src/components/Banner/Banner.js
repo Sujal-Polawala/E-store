@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Slider from "react-slick";
-import {
-  bannerImgOne,
-  bannerImgTwo,
-  bannerImgThree,
-} from "../../assets/images";
 import Image from "../designLayouts/Image";
+import Banner1 from "../../assets/Banner1.webp";
+import Banner2 from "../../assets/Banner2.webp";
+import Banner3 from "../../assets/Banner3.webp";
 
 const Banner = () => {
   const [dotActive, setDocActive] = useState(0);
@@ -104,17 +102,17 @@ const Banner = () => {
       <Slider {...settings}>
         <Link to="/offer">
           <div>
-            <Image imgSrc={bannerImgOne} />
+            <Image imgSrc={Banner1} />
           </div>
         </Link>
         <Link to="/offer">
           <div>
-            <Image imgSrc={bannerImgTwo} />
+            <Image imgSrc={Banner2} />
           </div>
         </Link>
         <Link to="/offer">
           <div>
-            <Image imgSrc={bannerImgThree} />
+            <Image imgSrc={Banner3} />
           </div>
         </Link>
       </Slider>
