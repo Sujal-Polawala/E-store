@@ -1,146 +1,93 @@
-import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import Breadcrumbs from "../../components/pageProps/Breadcrumbs";
+import React, { useState } from "react";
+import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 
-const Contact = () => {
-  const location = useLocation();
-  const [prevLocation, setPrevLocation] = useState("");
-  useEffect(() => {
-    setPrevLocation(location.state.data);
-  }, [location]);
+const ContactUs = () => {
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
 
-  const [clientName, setclientName] = useState("");
-  const [email, setEmail] = useState("");
-  const [messages, setMessages] = useState("");
-
-  // ========== Error Messages Start here ============
-  const [errClientName, setErrClientName] = useState("");
-  const [errEmail, setErrEmail] = useState("");
-  const [errMessages, setErrMessages] = useState("");
-  // ========== Error Messages End here ==============
-  const [successMsg, setSuccessMsg] = useState("");
-
-  const handleName = (e) => {
-    setclientName(e.target.value);
-    setErrClientName("");
-  };
-  const handleEmail = (e) => {
-    setEmail(e.target.value);
-    setErrEmail("");
-  };
-  const handleMessages = (e) => {
-    setMessages(e.target.value);
-    setErrMessages("");
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ================= Email Validation start here =============
-  const EmailValidation = (email) => {
-    return String(email)
-      .toLowerCase()
-      .match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i);
-  };
-  // ================= Email Validation End here ===============
-
-  const handlePost = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (!clientName) {
-      setErrClientName("Enter your Name");
-    }
-    if (!email) {
-      setErrEmail("Enter your Email");
-    } else {
-      if (!EmailValidation(email)) {
-        setErrEmail("Enter a Valid Email");
-      }
-    }
-    if (!messages) {
-      setErrMessages("Enter your Messages");
-    }
-    if (clientName && email && EmailValidation(email) && messages) {
-      setSuccessMsg(
-        `Thank you dear ${clientName}, Your messages has been received successfully. Futher details will sent to you by your email at ${email}.`
-      );
-    }
+    alert("Your message has been sent successfully!");
   };
 
   return (
-    <div className="max-w-container mx-auto px-4">
-      <Breadcrumbs title="Contact" prevLocation={prevLocation} />
-      {successMsg ? (
-        <p className="pb-20 w-96 font-medium text-green-500">{successMsg}</p>
-      ) : (
-        <form className="pb-20">
-          <h1 className="font-titleFont font-semibold text-3xl">
-            Fill up a Form
-          </h1>
-          <div className="w-[500px] h-auto py-6 flex flex-col gap-6">
-            <div>
-              <p className="text-base font-titleFont font-semibold px-2">
-                Name
-              </p>
-              <input
-                onChange={handleName}
-                value={clientName}
-                className="w-full py-1 border-b-2 px-2 text-base font-medium placeholder:font-normal placeholder:text-sm outline-none focus-within:border-primeColor"
-                type="text"
-                placeholder="Enter your name here"
-              />
-              {errClientName && (
-                <p className="text-red-500 text-sm font-titleFont font-semibold mt-1 px-2 flex items-center gap-1">
-                  <span className="text-sm italic font-bold">!</span>
-                  {errClientName}
-                </p>
-              )}
-            </div>
-            <div>
-              <p className="text-base font-titleFont font-semibold px-2">
-                Email
-              </p>
-              <input
-                onChange={handleEmail}
-                value={email}
-                className="w-full py-1 border-b-2 px-2 text-base font-medium placeholder:font-normal placeholder:text-sm outline-none focus-within:border-primeColor"
-                type="email"
-                placeholder="Enter your name here"
-              />
-              {errEmail && (
-                <p className="text-red-500 text-sm font-titleFont font-semibold mt-1 px-2 flex items-center gap-1">
-                  <span className="text-sm italic font-bold">!</span>
-                  {errEmail}
-                </p>
-              )}
-            </div>
-            <div>
-              <p className="text-base font-titleFont font-semibold px-2">
-                Messages
-              </p>
-              <textarea
-                onChange={handleMessages}
-                value={messages}
-                cols="30"
-                rows="3"
-                className="w-full py-1 border-b-2 px-2 text-base font-medium placeholder:font-normal placeholder:text-sm outline-none focus-within:border-primeColor resize-none"
-                type="text"
-                placeholder="Enter your name here"
-              ></textarea>
-              {errMessages && (
-                <p className="text-red-500 text-sm font-titleFont font-semibold mt-1 px-2 flex items-center gap-1">
-                  <span className="text-sm italic font-bold">!</span>
-                  {errMessages}
-                </p>
-              )}
-            </div>
-            <button
-              onClick={handlePost}
-              className="w-44 bg-primeColor text-gray-200 h-10 font-titleFont text-base tracking-wide font-semibold hover:bg-black hover:text-white duration-200"
-            >
-              Post
+    <div className="min-h-screen bg-white p-10">
+      {/* Hero Section */}
+      <div className="text-center mb-10">
+        <h1 className="text-4xl font-bold text-gray-800">Contact Us</h1>
+        <p className="text-gray-600 mt-2">We would love to hear from you!</p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-10 max-w-6xl mx-auto">
+        {/* Contact Form */}
+        <div className="bg-gray-100 p-8 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Send Us a Message</h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <input
+              type="text"
+              name="name"
+              placeholder="Your Name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-300 rounded-md"
+              required
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Your Email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-300 rounded-md"
+              required
+            />
+            <textarea
+              name="message"
+              placeholder="Your Message"
+              rows="4"
+              value={formData.message}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-300 rounded-md"
+              required
+            ></textarea>
+            <button type="submit" className="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700">
+              Send Message
             </button>
+          </form>
+        </div>
+
+        {/* Contact Information */}
+        <div className="space-y-6">
+          <div className="flex items-center space-x-4 p-5 bg-gray-50 rounded-lg shadow-md">
+            <FaPhoneAlt className="text-blue-600 text-xl" />
+            <p className="text-gray-800">+91 98765 43210</p>
           </div>
-        </form>
-      )}
+          <div className="flex items-center space-x-4 p-5 bg-gray-50 rounded-lg shadow-md">
+            <FaEnvelope className="text-blue-600 text-xl" />
+            <p className="text-gray-800">styleverse81@gmail.com</p>
+          </div>
+          <div className="flex items-center space-x-4 p-5 bg-gray-50 rounded-lg shadow-md">
+            <FaMapMarkerAlt className="text-blue-600 text-xl" />
+            <p className="text-gray-800">Gujarat, India</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Google Map */}
+      <div className="mt-10 w-full h-80">
+        <iframe
+          title="Google Map"
+          className="w-full h-full rounded-lg shadow-md"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d29400404.183848694!2d70.57903405534944!3d22.258652632178297!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3959a7aa6a1f67db%3A0x6f2b2b1c1e6c91e0!2sGujarat!5e0!3m2!1sen!2sin!4v1698412345678!5m2!1sen!2sin"
+          allowFullScreen=""
+          loading="lazy"
+        ></iframe>
+      </div>
     </div>
   );
 };
 
-export default Contact;
+export default ContactUs;
