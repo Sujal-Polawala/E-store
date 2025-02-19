@@ -7,7 +7,8 @@ import { logoLight } from "../../assets/images";
 import { PopupMsg } from "../../components/popup/PopupMsg";
 
 const SignIn = () => {
-  const { dispatch } = useContext(AuthContext);
+  const { state, dispatch } = useContext(AuthContext); // Get user from context
+  const user = state?.user;
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -22,8 +23,15 @@ const SignIn = () => {
     type: "",
     show: false,
   });
+  const [failedAttempts, setFailedAttempts] = useState(0); // Track failed login attempts
   const [hasAttemptedLogin, setHasAttemptedLogin] = useState(false); // Tracks login attempts
 
+  useEffect(() => {
+    // Redirect if user is already logged in
+    if (user) {
+      navigate("/", { replace: true });
+    }
+  }, [user, navigate]);
 
   const validateForm = () => {
     let errors = {};
@@ -50,6 +58,7 @@ const SignIn = () => {
           user: res.data,
           token: res.data.token,
         };
+        localStorage.setItem("user", JSON.stringify(userData));
         dispatch({
           type: "LOGIN",
           payload: userData,
@@ -61,14 +70,34 @@ const SignIn = () => {
         });
 
         setTimeout(() => {
-          navigate("/");
+          navigate("/", { replace: true }); // Use replace to clear history
         }, 1000);
+
+        // Reset failed attempts on successful login
+        setFailedAttempts(0);
       }
     } catch (error) {
       setIsUserExist(false);
 
-      // Lock account for 5 minutes on failed login
-      if (!lockTime) {
+      // Check if the user is blocked
+      if (
+        error.response &&
+        error.response.data.message ===
+          "Your account has been blocked. Please contact support."
+      ) {
+        setPopup({
+          message: "Your account has been blocked. Please contact support.",
+          type: "error",
+          show: true,
+        });
+        return;
+      }
+
+      // Increment failed attempts
+      setFailedAttempts((prev) => prev + 1);
+
+      // Lock account after 3 failed attempts
+      if (failedAttempts >= 3 && !lockTime) {
         setLockTime(5);
         setCanLoginAgain(false); // Prevent login
       }
@@ -210,16 +239,8 @@ const SignIn = () => {
                   Account locked. Try again in {lockTime} minutes.
                 </p>
               )}
-              {canLoginAgain && lockTime === null && hasAttemptedLogin && (
-                <p className="text-green-500 text-center mt-4">
-                  You can now log in again.
-                </p>
-              )}
-
-              {/* {message && (
-                <p className="text-red-500 text-center mt-4">{message}</p>
-              )} */}
               {!isUserExist && (
+                <>
                 <p className="text-sm text-center mt-4">
                   User does not exist.{" "}
                   <Link
@@ -228,14 +249,18 @@ const SignIn = () => {
                   >
                     Sign up
                   </Link>
-                </p>
-              )}
-              <p className="text-center text-sm mt-6">
-                Don't have an account?{" "}
-                <Link to="/signup" className="text-purple-600 hover:underline">
-                  Sign up
-                </Link>
-              </p>
+                </p> 
+                <p className="text-sm text-center mt-4">
+                  Not registered?{" "}
+                    <Link
+                      to="/signup"
+                      className="text-purple-600 hover:underline"
+                      >
+                      Sign Up
+                    </Link>
+                  </p>
+                </>
+                )}
             </>
           )}
         </div>
