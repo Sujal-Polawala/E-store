@@ -11,20 +11,26 @@ import SellerDashboard from "./components/Dashboard";
 import NewProduct from "./components/newProductForm";
 import { SellerProvider } from "./context/sellerContext";
 import CrudPage from "./components/ViewProducts";
+import Orders from "./components/viewOrders";
+import { ApolloProvider } from "@apollo/client";
+import client from "./components/apolloClient";
 
 const App = () => {
   return (
     <SellerProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<SellerDashboard />} />
-          <Route path="/seller/add-product" element={<NewProduct />} />
-          <Route path="/seller/products" element={<CrudPage />} />
-        </Routes>
-      </Router>
+      <ApolloProvider client={client}>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/dashboard" element={<SellerDashboard />} />
+            <Route path="/seller/add-product" element={<NewProduct />} />
+            <Route path="/seller/products" element={<CrudPage />} />
+            <Route path="/seller/orders" element={<Orders />} />
+          </Routes>
+        </Router>
+      </ApolloProvider>
     </SellerProvider>
   );
 };
