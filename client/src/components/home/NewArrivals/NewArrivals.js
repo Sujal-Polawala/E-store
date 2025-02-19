@@ -14,7 +14,7 @@ const NewArrivals = () => {
     const fetchNewArrival = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/products/jewelery"
+          "http://localhost:5000/api/products/glasses"
         ); // Replace with your backend API URL
         setNewArrival(response.data); // Set the fetched data to state
         setLoading(false);
@@ -27,7 +27,7 @@ const NewArrivals = () => {
   }, []);
 
   const settings = {
-    infinite: true,
+    infinite: false, // Change to false to test
     speed: 500,
     slidesToShow: 4,
     slidesToScroll: 1,
@@ -60,6 +60,7 @@ const NewArrivals = () => {
       },
     ],
   };
+  
 
   return (
     <div className="w-full pb-16">
@@ -75,9 +76,9 @@ const NewArrivals = () => {
                 image={product.image}
                 title={product.title}
                 price={product.price}
-                color={product.color}
                 badge={product.badge}
                 des={product.description}
+                category={product.category}
               />
             </div>
           ))
