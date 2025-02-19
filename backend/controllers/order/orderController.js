@@ -5,6 +5,8 @@ const Order = require("../../models/order"); // Adjust the path to your Order mo
 const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
 dotenv.config();
+const Product = require("../../models/productModel");
+const Seller = require("../../models/seller");
 
 const generateInvoicePDF = async (orderId, order, filePath) => {
   const doc = new PDFDocument({ margin: 50 });
@@ -200,18 +202,37 @@ exports.downloadOrder = async (req, res) => {
 };
 
 exports.placeOrder = async (orderDetails) => {
-  const { userId, cartItems, totalPrice, shippingAddress, paymentId } =
-    orderDetails;
+  const { userId, cartItems, totalPrice, shippingAddress, paymentId } = orderDetails;
 
   try {
     if (!userId || !cartItems || !cartItems.length || !totalPrice) {
       throw new Error("Missing required fields for order.");
     }
 
+    // Reduce product count (quantity)
+    for (const item of cartItems) {
+      const product = await Product.findOne({ _id: item.productId });
+
+      if (!product) {
+        throw new Error(`Product not found: ${item.title}`);
+      }
+
+      // Check if stock (rating.count) is available
+      if (product.quantity < item.quantity) {
+        throw new Error(`Insufficient stock for product: ${item.title}`);
+      }
+
+      // Reduce stock in rating.count
+      product.quantity -= item.quantity;
+      await product.save();
+    }
+
+    // Create order
     const order = new Order({
       userId,
       items: cartItems.map((item) => ({
         productId: item.productId,
+        sellerId: item.sellerId,
         title: item.title,
         price: item.price,
         quantity: item.quantity,
@@ -225,12 +246,26 @@ exports.placeOrder = async (orderDetails) => {
       deliveryDate: new Date(new Date().setDate(new Date().getDate() + 5)), // Estimated delivery
     });
 
-    // Generate the orderId before saving the order
-    order.orderId = order._id.toString(); // This generates the orderId based on the _id
-
-    // Save the order
+    // Generate the orderId before saving
+    order.orderId = order._id.toString();
+    
     const savedOrder = await order.save();
-    console.log("Order saved:", savedOrder);
+    console.log("Order placed successfully, product count updated:", savedOrder);
+    
+    // Track sellers who have been updated to avoid duplication
+    const updatedSellers = new Set();
+
+    // Now add the order to the respective seller's orders list
+    for (const item of cartItems) {
+      const seller = await Seller.findOne({ sellerId: item.sellerId });
+      if (seller && !updatedSellers.has(seller._id.toString())) {
+        seller.orders.push(savedOrder._id); // Add the order ID to the seller's orders array
+        await seller.save(); // Save the updated seller document
+        updatedSellers.add(seller._id.toString()); // Mark this seller as updated
+        console.log(`Added order to seller ${seller.username}`);
+      }
+    }
+
     return savedOrder;
   } catch (error) {
     console.error("Error placing order:", error.message);
@@ -240,9 +275,28 @@ exports.placeOrder = async (orderDetails) => {
 
 exports.getAllOrder = async (req, res) => {
   try {
-    const orders = await Order.find(); // Fetch all orders from the collection
+    const { sellerId } = req.query;
+    let query = {}; // Initialize query object
+
+    if (sellerId) {
+      query["items.sellerId"] = sellerId; // Filter orders by sellerId
+    }
+
+    const orders = await Order.find(query)
+      .populate({
+        path: "items.sellerId",
+        select: "name",
+      })
+      .populate({
+        path: "paymentId",
+        select: "cardHolderName",
+      })
+      .lean()
+      .exec();
+
     res.json(orders);
   } catch (err) {
+    console.error("Error fetching orders:", err);
     res.status(500).send("Server Error");
   }
 };
