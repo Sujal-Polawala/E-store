@@ -3,7 +3,7 @@ import ReactPaginate from "react-paginate";
 import axios from "axios";
 import Product from "../../home/Products/Product";
 
-const Pagination = ({ itemsPerPage, selectedBadge, selectedCategory, setSelectedBadge, setSelectedCategory }) => {
+const Pagination = ({ itemsPerPage, selectedBadge, selectedCategory, setSelectedBadge, setSelectedCategory, selectedPriceRange }) => {
   const [items, setItems] = useState([]);
   const [currentItems, setCurrentItems] = useState([]);
   const [pageCount, setPageCount] = useState(0);
@@ -26,6 +26,11 @@ const Pagination = ({ itemsPerPage, selectedBadge, selectedCategory, setSelected
     if (selectedCategory) {
       query.append("category", selectedCategory);
     }
+
+    if (selectedPriceRange) {
+      query.append("minPrice", selectedPriceRange.priceOne);
+      query.append("maxPrice", selectedPriceRange.priceTwo);
+    }
   
     const queryString = query.toString();
     if (queryString) {
@@ -44,6 +49,10 @@ const Pagination = ({ itemsPerPage, selectedBadge, selectedCategory, setSelected
       }
       if (selectedCategory) {
         query.append("category", selectedCategory);
+      }
+      if (selectedPriceRange) {
+        query.append("minPrice", selectedPriceRange.priceOne);
+        query.append("maxPrice", selectedPriceRange.priceTwo);
       }
       const response = await axios.get(
         `http://localhost:5000/api/products?${query.toString()}`
@@ -82,7 +91,7 @@ const Pagination = ({ itemsPerPage, selectedBadge, selectedCategory, setSelected
   useEffect(() => {
     updateURLParams();
     fetchProducts();
-  }, [selectedBadge, selectedCategory]);
+  }, [selectedBadge, selectedCategory, selectedPriceRange]);
 
   useEffect(() => {
     const endOffset = itemOffset + itemsPerPage;
@@ -104,9 +113,9 @@ const Pagination = ({ itemsPerPage, selectedBadge, selectedCategory, setSelected
                 image={item.image}
                 title={item.title}
                 price={item.price}
-                color={item.color}
                 badge={item.badge}
                 des={item.description}
+                category={item.category}
               />
             </div>
           ))
