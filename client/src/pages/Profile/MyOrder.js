@@ -37,6 +37,10 @@ function MyOrder() {
       }
     };
     fetchOrderData();
+
+    const interval = setInterval(fetchOrderData, 5000);
+
+    return () => clearInterval(interval);
   }, [isLoggedIn, userId]);
 
   useEffect(() => {
@@ -84,7 +88,7 @@ function MyOrder() {
     setLoadingInvoice(orderId);
     setTimeout(() => setLoadingInvoice(null), 1000);
   };
-  
+
   const handleInvoiceDownload = async (orderId) => {
     try {
       const response = await axios.get(
@@ -101,7 +105,19 @@ function MyOrder() {
     } catch (error) {
       console.error("Error downloading invoice:", error);
     }
-  };  
+  };
+
+  const handleEmailInvoice = async (orderId) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/api/orders/invoice/email/${orderId}`
+      );
+      alert("Invoice has been sent to your email!");
+    } catch (error) {
+      console.error("Error sending email:", error);
+      alert("Failed to send invoice.");
+    }
+  };
 
   if (!user) {
     return (
@@ -187,9 +203,25 @@ function MyOrder() {
                     </div>
                     <div className="text-right">
                       <div>
-                        <p className="text-gray-600 text-sm font-bold">
-                          ORDER ID: {order._id}
+                        <p
+                          className={`text-sm font-bold ${
+                            order.status === "Pending"
+                              ? "text-yellow-500"
+                              : order.status === "Shipped"
+                              ? "text-blue-500"
+                              : order.status === "Delivered"
+                              ? "text-green-500"
+                              : order.status === "Cancelled"
+                              ? "text-red-500"
+                              : order.status === "Processing"
+                              ? "text-orange-500" // Color for Processing
+                              : "text-gray-600" // Default color
+                          }
+                          `}
+                        >
+                          Order Status: {order.status}
                         </p>
+
                         <Link
                           to={`/orders-details/${order._id}`}
                           className="text-blue-600 hover:underline text-sm"
@@ -232,13 +264,16 @@ function MyOrder() {
                               </div>
                             ) : (
                               <>
-                                <button onClick={() => handleInvoiceDownload(order._id)}
+                                <button
+                                  onClick={() =>
+                                    handleInvoiceDownload(order._id)
+                                  }
                                   className="block px-4 py-2 hover:bg-gray-100"
                                 >
                                   Download Invoice
                                 </button>
                                 <button
-                                  to={`/orders/invoice/email/${order._id}`}
+                                  onClick={() => handleEmailInvoice(order._id)}
                                   className="block px-4 py-2 hover:bg-gray-100"
                                 >
                                   Email Invoice
