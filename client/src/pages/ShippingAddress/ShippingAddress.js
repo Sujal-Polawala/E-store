@@ -17,6 +17,7 @@ const ShippingAddress = ({ cartItems, totalPrice, clearCart }) => {
     address: "",
     city: "",
     state: "",
+    country: "",
     pincode: "",
     mobileno: "",
   });
@@ -223,6 +224,23 @@ const ShippingAddress = ({ cartItems, totalPrice, clearCart }) => {
           </div>
           <div>
             <label
+              htmlFor="country"
+              className="block text-sm font-medium text-gray-600"
+            >
+              Country
+            </label>
+            <input
+              type="text"
+              name="country"
+              id="country"
+              value={shippingAddress.country}
+              onChange={handleInputChange}
+              className="mt-2 p-3 w-full border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
+              required
+            />
+          </div>
+          <div>
+            <label
               htmlFor="pincode"
               className="block text-sm font-medium text-gray-600"
             >
@@ -271,7 +289,7 @@ const ShippingAddress = ({ cartItems, totalPrice, clearCart }) => {
           <span>Total Price:</span>
           <span>
             $
-            {cartItems.length > 0 && (totalPrice)}
+            {totalPrice}
           </span>
         </div>
         <button
