@@ -14,12 +14,11 @@ import SpecialCase from "./components/SpecialCase/SpecialCase";
 import About from "./pages/About/About";
 import SignIn from "./pages/Account/SignIn";
 import SignUp from "./pages/Account/SignUp";
+import VerifyEmail from "./pages/Account/VerifyEmail";
 import Cart from "./pages/Cart/Cart";
 import Contact from "./pages/Contact/Contact";
 import Home from "./pages/Home/Home";
-import Journal from "./pages/Journal/Journal";
 import Offer from "./pages/Offer/Offer";
-import Payment from "./pages/payment/Payment";
 import ProductDetails from "./pages/ProductDetails/ProductDetails";
 import ShippingAddress from "./pages/ShippingAddress/ShippingAddress";
 import SuccessPage from "./pages/Sucess/SuccessPage";
@@ -54,7 +53,6 @@ const router = createBrowserRouter(
         <Route path="/shop" element={<Shop />}></Route>
         <Route path="/about" element={<About />}></Route>
         <Route path="/contact" element={<Contact />}></Route>
-        <Route path="/journal" element={<Journal />}></Route>
         <Route path="/profile" element={<ProfilePage />}></Route>
         <Route path="/profile/myaccount" element={<MyAccount />}></Route>
         <Route path="/profile/myorders" element={<MyOrder />}></Route>
@@ -69,6 +67,7 @@ const router = createBrowserRouter(
       </Route>
       <Route path="/signup" element={<SignUp />}></Route>
       <Route path="/signin" element={<SignIn />}></Route>
+      <Route path="/verify-email" element={<VerifyEmail />}></Route>
       <Route path="/forgot-password" element={<ForgotPassword />}></Route>
       <Route path="/reset-password/:id/:token" element={<ResetPassword />}></Route>
     </Route>
