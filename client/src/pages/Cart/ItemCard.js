@@ -25,14 +25,14 @@ const ItemCard = ({ item, handleDelete, handleQuantityChange }) => {
         </div>
         <div className="w-1/3 flex items-center gap-6 text-lg">
           <span
-            onClick={() => handleQuantityChange(item._id, "decrement")}
+            onClick={() => handleQuantityChange(item.productId, "decrement")}
             className="w-6 h-6 bg-gray-100 text-2xl flex items-center justify-center hover:bg-gray-300 cursor-pointer duration-300 border-[1px] border-gray-300 hover:border-gray-300"
           >
             -
           </span>
           <p>{item.quantity}</p>
           <span
-            onClick={() => handleQuantityChange(item._id, "increment")}
+            onClick={() => handleQuantityChange(item.productId, "increment")}
             className="w-6 h-6 bg-gray-100 text-2xl flex items-center justify-center hover:bg-gray-300 cursor-pointer duration-300 border-[1px] border-gray-300 hover:border-gray-300"
           >
             +
