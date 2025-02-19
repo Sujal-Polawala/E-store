@@ -23,7 +23,7 @@ const HeaderBottom = () => {
   const navigate = useNavigate();
   const { state, dispatch } = useContext(AuthContext);
   const { isLoggedIn, user } = state;
-  const [ cartCount, setCartCount ] = useState(0);
+  const [cartCount, setCartCount] = useState(0);
   const userId = user?.userId;
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -55,8 +55,9 @@ const HeaderBottom = () => {
   };
 
   const handleLogout = () => {
+    // localStorage.removeItem("user");
     dispatch({
-      type: "logout",
+      type: "LOGOUT",
     });
     navigate("/signin");
   };
@@ -92,7 +93,7 @@ const HeaderBottom = () => {
         fetchCartCount();
       }
     }, 1000); // Fetch every 5 seconds
-  
+
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, [userId]);
 
@@ -190,13 +191,13 @@ const HeaderBottom = () => {
                   {isLoggedIn && user?.username ? user.username.charAt(0) : "G"}
                 </div>
               </div>
-
               {/* Dropdown Menu */}
               {isDropdownOpen && (
                 <div
-                  ref={dropdownRef}
-                  className="absolute mt-2 right-0 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50"
-                  style={{ minWidth: "12rem" }}
+                ref={dropdownRef}
+                className="absolute mt-2 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50 
+                  w-56 sm:w-48 lg:w-56 lg:right-5 left-1/2 transform -translate-x-1/2 sm:left-auto sm:translate-x-0 
+                  overflow-hidden"
                 >
                   <div className="px-4 py-4">
                     <h3 className="font-bold text-base text-gray-800 border-b pb-2">
@@ -211,13 +212,19 @@ const HeaderBottom = () => {
                       >
                         <li className="flex items-center text-gray-600 hover:text-blue-600 cursor-pointer transition-all duration-300">
                           <FaUser className="mr-3 text-lg text-blue-500" />
-                          <Link to="/profile/myaccount" className="text-sm font-medium">
+                          <Link
+                            to="/profile/myaccount"
+                            className="text-sm font-medium"
+                          >
                             Your Account
                           </Link>
                         </li>
                         <li className="flex items-center text-gray-600 hover:text-green-600 cursor-pointer transition-all duration-300">
                           <FaBox className="mr-3 text-lg text-green-500" />
-                          <Link to="/profile/myorders" className="text-sm font-medium">
+                          <Link
+                            to="/profile/myorders"
+                            className="text-sm font-medium"
+                          >
                             Your Orders
                           </Link>
                         </li>
