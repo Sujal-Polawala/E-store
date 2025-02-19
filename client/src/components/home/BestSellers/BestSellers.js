@@ -30,7 +30,7 @@ const BestSellers = () => {
       {loading ? (
         <div>Loading...</div> // Show loading text while fetching data
       ) : (
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 lgl:grid-cols-3 xl:grid-cols-4 gap-10">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 lgl:grid-cols-3 xl:grid-cols-4">
           {bestSellers.slice(0,4).map((product) => (
             <Product
               key={product.id} // Use product ID as key
@@ -38,9 +38,9 @@ const BestSellers = () => {
               image={product.image} // Replace with the actual image path from the API response
               title={product.title}
               price={product.price}
-              color={product.color}
               badge={product.badge}
               des={product.description}
+              category={product.category}
             />
           ))}
         </div>
