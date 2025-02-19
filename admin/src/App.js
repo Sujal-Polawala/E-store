@@ -1,16 +1,18 @@
-import AdminLogin from './pages/AdminLogin'
-import AdminDashboard from './pages/Dashboard'
-import CategoryPage from './pages/CategoryPage'
-import UsersPage from './pages/UsersPage'
-import CrudPage from './pages/CrudPage'
-import Orders from './pages/Orders'
-import NewProductForm from './pages/NewProductForm'
-import AdminSellerRequestsPage from './pages/AdminSellerRequestPage'
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/Dashboard";
+import CategoryPage from "./pages/CategoryPage";
+import UsersPage from "./pages/UsersPage";
+import CrudPage from "./pages/CrudPage";
+import Orders from "./pages/Orders";
+import AdminSellerRequestsPage from "./pages/AdminSellerRequestPage";
 // import Navbar from './pages/Navbar'
-import {BrowserRouter as Router , Routes, Route} from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ApolloProvider } from "@apollo/client";
+import client from "./pages/apolloClient";
 
 function App() {
   return (
+    <ApolloProvider client={client}>
       <Router>
         {/* <Navbar /> */}
         <Routes>
@@ -20,10 +22,13 @@ function App() {
           <Route path="/admin/users" element={<UsersPage />} />
           <Route path="/admin/crud" element={<CrudPage />} />
           <Route path="/admin/orders" element={<Orders />} />
-          <Route path="/admin/newproduct" element={<NewProductForm />} />
-          <Route path="/admin/sellerrequests" element={<AdminSellerRequestsPage />} />
+          <Route
+            path="/admin/sellerrequests"
+            element={<AdminSellerRequestsPage />}
+          />
         </Routes>
-    </Router>
+      </Router>
+    </ApolloProvider>
   );
 }
 
