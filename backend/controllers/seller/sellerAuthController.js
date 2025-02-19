@@ -47,6 +47,10 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    if (seller.status === "rejected") {
+      return res.status(403).json({ message: "Your request has been rejected. Please contact support." });
+    }
+
     // Check if the seller is approved
     if (seller.status !== "approved") {
       return res.status(403).json({ message: "Your request is still pending approval or has been rejected." });
