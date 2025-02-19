@@ -8,7 +8,7 @@
       title: "",
       description: "",
       price: 0,
-      rating: { count: 0 },
+      quantity: 0,
       image: "",
       category: "",
       badge: "Popular", // Set a default value
@@ -49,7 +49,7 @@
         !newProduct.title ||
         !newProduct.description ||
         !newProduct.price ||
-        !newProduct.rating.count ||
+        !newProduct.quantity ||
         !newProduct.category ||
         !newProduct.image ||
         !newProduct.badge ||
@@ -71,7 +71,7 @@
           title: "",
           description: "",
           price: 0,
-          rating: { count: 0 },
+          quantity: 0,
           image: "",
           category: "",
           badge: "Popular",
@@ -165,11 +165,11 @@
                 </label>
                 <input
                   type="number"
-                  value={newProduct.rating.count}
+                  value={newProduct.quantity}
                   onChange={(e) =>
                     setNewProduct({
                       ...newProduct,
-                      rating: { count: parseInt(e.target.value, 10) },
+                      quantity: parseInt(e.target.value),
                     })
                   }
                   className="border border-gray-300 p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
