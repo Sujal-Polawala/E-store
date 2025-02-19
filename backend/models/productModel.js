@@ -9,16 +9,12 @@ const productSchema = new mongoose.Schema({
   description: String,
   category: String,
   image: String,
-  color: String,
   badge: { // Include badge in schema with predefined values
     type: String,
     enum: ["Popular", "Top Rated", "Average", "Luxury", "Affordable", "Standard"],
     default: "Popular", // Default value
   },
-  rating: {
-    rate: Number,
-    count: Number,
-  },
+  quantity: Number,
   sellerId: { type: mongoose.Schema.Types.ObjectId, ref: "Seller" }, 
 });
 
