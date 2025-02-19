@@ -24,6 +24,7 @@ exports.getCartByUser = async (req, res) => {
       badge: item.productId.badge,
       quantity: item.quantity,
       addedAt: item.addedAt,
+      sellerId: item.productId.sellerId,
     }));
 
     res.status(200).json(formattedItems);
