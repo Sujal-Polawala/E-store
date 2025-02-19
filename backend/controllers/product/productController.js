@@ -1,14 +1,24 @@
 // /controllers/productController.js
 
-const Product = require('../../models/productModel');
-const productsData = require('../../data/productsData'); // Importing the sample product data
-const mongoose = require('mongoose');
-const Category = require('../../models/category');
-const Seller = require('../../models/seller');
+const Product = require("../../models/productModel");
+const productsData = require("../../data/productsData"); // Importing the sample product data
+const mongoose = require("mongoose");
+const Category = require("../../models/category");
+const Seller = require("../../models/seller");
 
 const addProduct = async (req, res) => {
   try {
-    const { sellerId, title, price, description, category, image, color, badge, rating } = req.body;
+    const {
+      sellerId,
+      title,
+      price,
+      description,
+      category,
+      image,
+      color,
+      badge,
+      quantity,
+    } = req.body;
 
     if (!sellerId) {
       return res.status(400).send({ message: "Seller ID is required" });
@@ -27,7 +37,7 @@ const addProduct = async (req, res) => {
       image,
       color,
       badge,
-      rating,
+      quantity,
     });
 
     // Save product to database
@@ -99,11 +109,13 @@ const deleteProductById = async (req, res) => {
 // Function to insert multiple products
 const insertProducts = async (req, res) => {
   try {
-    await Product.insertMany(productsData);  // Insert the sample data
-    res.status(201).json({ message: 'Products inserted successfully!' });
+    await Product.insertMany(productsData); // Insert the sample data
+    res.status(201).json({ message: "Products inserted successfully!" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Error inserting products', error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error inserting products", error: err.message });
   }
 };
 
@@ -118,18 +130,18 @@ const getAllProduct = async (req, res) => {
     // Return the products as a response
     res.json(products);
   } catch (err) {
-    res.status(500).json({ message: 'Error fetching products' });
+    res.status(500).json({ message: "Error fetching products" });
   }
-}
+};
 
 const getFilters = async (req, res) => {
   try {
     const categories = await Category.find();
     res.json({ categories });
-    } catch (err) {
-      res.status(500).json({ message: 'Error fetching categories' });
-      }
-}
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching categories" });
+  }
+};
 
 const getAllProducts = async (req, res) => {
   try {
@@ -178,8 +190,8 @@ module.exports = {
   getAllProduct,
   getAllProducts,
   fetchProductById,
-  getFilters, 
+  getFilters,
   addProduct,
   updateProductById,
-  deleteProductById
+  deleteProductById,
 };
