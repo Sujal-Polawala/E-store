@@ -98,16 +98,14 @@ const ShippingAddress = ({ cartItems, totalPrice, clearCart }) => {
   };
 
   useEffect(() => {
-    if (totalPrice <= 200) {
-      setShippingCharge(30);
-    } else if (totalPrice <= 400) {
-      setShippingCharge(25);
-    } else if (totalPrice > 401) {
-      setShippingCharge(20);
+    if (totalPrice) {
+      setShippingCharge(1);
     }
   }, [totalPrice]);
 
   totalPrice = totalPrice + shippingCharge;
+
+  const finalPrice = totalPrice + shippingCharge;
 
   const handleCheckout = async () => {
     try {
@@ -289,7 +287,7 @@ const ShippingAddress = ({ cartItems, totalPrice, clearCart }) => {
           <span>Total Price:</span>
           <span>
             $
-            {totalPrice}
+            {finalPrice}
           </span>
         </div>
         <button
