@@ -43,13 +43,18 @@
       reader.readAsDataURL(file);
     };
 
+    const validateInput = (value) => {
+      return value.trim() !== "" && !/\s{2,}/.test(value);
+    };
+  
+
     const addProduct = async (e) => {
       e.preventDefault(); 
       if (
-        !newProduct.title ||
-        !newProduct.description ||
-        !newProduct.price ||
-        !newProduct.quantity ||
+        !validateInput(newProduct.title) ||
+        !validateInput(newProduct.description) ||
+        !newProduct.price <= 0 ||
+        !newProduct.quantity <= 0 ||
         !newProduct.category ||
         !newProduct.image ||
         !newProduct.badge ||
