@@ -22,7 +22,7 @@ const typeDefs = gql`
     _id: ID!
     name: String!
     orders: [Order] 
-    totalSales: Float
+    totalSales: Float!
   }
 
   type Product {

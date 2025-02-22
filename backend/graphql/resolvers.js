@@ -79,42 +79,53 @@ const resolvers = {
     // In the resolvers file
     sellers: async () => {
       try {
-        const sellers = await Seller.find();
-        
-        const sellerData = await Promise.all(
+        const sellers = await Seller.find().lean();
+
+        const sellersWithOrders = await Promise.all(
           sellers.map(async (seller) => {
             const orders = await Order.find({ "items.sellerId": seller._id });
 
-            // Calculate total sales for the seller
-            const totalSales = orders.reduce((sum, order) => {
+            const filteredOrders = orders.map((order) => {
               const sellerItems = order.items.filter(
                 (item) => item.sellerId.toString() === seller._id.toString()
               );
-              return (
-                sum +
-                sellerItems.reduce((itemSum, item) => itemSum + item.price * item.quantity, 0)
-              );
-            }, 0);
+              
+              console.log(sellerItems);
 
-            // Process orders and calculate totalPrice for each order
-            const processedOrders = orders.map((order) => ({
-              ...order.toObject(),
-              totalPrice: order.totalPrice || 0,
-              createdAt: order.createdAt,
-            }));
+              const sellerTotalPrice = sellerItems.reduce(
+                (sum, item) => sum + item.price * item.quantity,
+                0
+              );
+
+
+              console.log(sellerTotalPrice);
+
+              return {
+                _id: order._id,
+                totalPrice: sellerTotalPrice,
+                createdAt: order.createdAt,
+              };
+            });
+
+            console.log(filteredOrders);
+
+            const totalSales = filteredOrders.reduce(
+              (sum, order) => sum + order.totalPrice,
+              0
+            );
 
             return {
-              ...seller.toObject(),
-              totalSales, // Add calculated totalSales here
-              orders: processedOrders,
+              ...seller,
+              orders: filteredOrders,
+              totalSales, // Ensure this is included
             };
           })
         );
-        
-        return sellerData;
-      } catch (err) {
-        console.error(err);
-        throw new Error("Error fetching sellers or orders.");
+
+        return sellersWithOrders;
+      } catch (error) {
+        console.error("Error fetching sellers:", error);
+        throw new Error("Error fetching sellers");
       }
     },
 
@@ -162,7 +173,7 @@ const resolvers = {
             $limit: 5, // Limit to top 5 best-selling products
           },
         ]);
-    
+
         // Return the results with formatted product data
         return products.map((product) => ({
           _id: product._id.toString(),
@@ -173,8 +184,7 @@ const resolvers = {
         console.error("Error fetching best-selling products:", error);
         throw new Error("Error fetching best-selling products");
       }
-    },     
-    
+    },
   },
 };
 
