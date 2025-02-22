@@ -5,27 +5,29 @@ import {
   AiFillGift,
   AiFillSetting,
   AiOutlinePlus,
+  AiOutlineMenu
 } from "react-icons/ai";
 import { BsBoxSeam, BsTag, BsCart4 } from "react-icons/bs";
 import { FaUserFriends, FaLink } from "react-icons/fa";
-// import { HiOutlineCollection } from "react-icons/hi";
-// import SearchBar from "./SearchBar";
-// import Avatar from "./Avatar";
 
 const Sidebar = () => {
-  // const [active, setActive] = useState(true); 
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Top Bar with SearchBar and Avatar */}
-      {/* <header className="flex items-center justify-center bg-white shadow-md p-4">
-        <SearchBar />
-        <Avatar />
-      </header> */}
+      <button
+        className="lg:hidden fixed top-4 right-4 z-50 bg-gray-800 text-white p-2 rounded-md"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <AiOutlineMenu className="text-2xl" />
+      </button>
+
 
       {/* Main Content */}
       <div className="flex flex-grow">
         {/* Sidebar */}
-        <aside className="w-64 bg-white shadow-lg">
+        <aside className={`bg-white shadow-lg fixed lg:relative z-40 min-h-screen w-64 transition-transform transform ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0 lg:flex flex-col p-4`}>
           <div className="p-4">
             {/* Quick Links Section */}
             <div>
@@ -163,6 +165,12 @@ const Sidebar = () => {
           </div>
         </aside>
       </div>
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black opacity-50 lg:hidden"
+          onClick={() => setIsOpen(false)}
+        ></div>
+      )}
     </div>
   );
 };
