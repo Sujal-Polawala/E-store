@@ -56,12 +56,10 @@ const Cart = () => {
     setTotalAmt(price);
   }, [cartItems]);
   useEffect(() => {
-    if (totalAmt <= 200) {
-      setShippingCharge(30);
-    } else if (totalAmt <= 400) {
-      setShippingCharge(25);
-    } else if (totalAmt > 401) {
-      setShippingCharge(20);
+    if (totalAmt > 0) {
+      setShippingCharge(1)
+    } else {
+      setShippingCharge(0)
     }
   }, [totalAmt]);
 
@@ -102,7 +100,7 @@ const Cart = () => {
           let newQuantity = action === "increment" ? item.quantity + 1 : Math.max(1, item.quantity - 1);
   
           // Check if requested quantity is beyond stock limits
-          if (newQuantity > product.rating.count) {
+          if (newQuantity > product.quantity) {
             // Always show popup when the user tries to increase beyond stock
             setPopup({ 
               message: "",
@@ -111,7 +109,7 @@ const Cart = () => {
             })
             setTimeout(() => {
             setPopup({
-              message: `Only ${product.rating.count} items available in stock!`,
+              message: `Only ${product.quantity} items available in stock!`,
               type: "error",
               show: true,
             });
