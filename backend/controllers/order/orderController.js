@@ -33,7 +33,7 @@ const generateInvoicePDF = async (orderId, order, filePath) => {
   doc.text(`Invoice Number: ${order._id}`, 50, 180);
   doc.text(`Address:`, 300, 200).text(address, { width: 250, align: "left" });
   doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`, 50, 200);
-  doc.text(`Total: ₹${order.totalPrice.toFixed(2)}`, 50, 220);
+  doc.text(`Total: $${order.totalPrice.toFixed(2)}`, 50, 220);
 
   doc.text(`Billed To: ${order.userId.username}`, 300, 180);
   doc.moveDown();
@@ -88,8 +88,8 @@ const generateInvoicePDF = async (orderId, order, filePath) => {
       .text(title, 100, currentY, { width: titleWidth })
       .text(description, 200, currentY, { width: descriptionWidth })
       .text(item.quantity.toString(), 350, currentY)
-      .text(`₹${item.price.toFixed(2)}`, 450, currentY)
-      .text(`₹${(item.price * item.quantity).toFixed(2)}`, 520, currentY);
+      .text(`$${item.price.toFixed(2)}`, 450, currentY)
+      .text(`$${(item.price * item.quantity).toFixed(2)}`, 520, currentY);
 
     currentY += dynamicHeight + 10; // Add extra space between rows
     serialNumber++;
