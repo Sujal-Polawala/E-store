@@ -4,31 +4,26 @@ import axios from "axios";
 import Breadcrumbs from "../../components/pageProps/Breadcrumbs";
 
 function OrderDetails() {
-  const { orderId } = useParams(); // Get orderId from the route
+  const { orderId } = useParams();
   const location = useLocation();
-  const [prevLocation, setPrevLocation] = useState("");
   const [order, setOrder] = useState(null);
-  const [payment, setPayment] = useState(null); // State for payment details
+  const [payment, setPayment] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        // Fetch order details by orderId
         const orderResponse = await axios.get(
-          `http://localhost:5000/api/orders/${orderId}` // Fetch order details
+          `http://localhost:5000/api/orders/${orderId}`
         );
         setOrder(orderResponse.data);
 
-        // Check if paymentId is available in the order and fetch payment details
         if (orderResponse.data.paymentId) {
           const paymentResponse = await axios.get(
-            `http://localhost:5000/api/payments/${orderResponse.data.paymentId}` // Fetch payment details using paymentId
+            `http://localhost:5000/api/payments/${orderResponse.data.paymentId}`
           );
           setPayment(paymentResponse.data);
-        } else {
-          setError("Payment details not available.");
         }
       } catch (err) {
         console.error("Error fetching order details:", err);
@@ -43,66 +38,90 @@ function OrderDetails() {
 
   if (isLoading) {
     return (
-      <p className="text-center text-gray-500">Loading order details...</p>
+      <p className="text-center text-gray-500 text-xl">
+        Loading order details...
+      </p>
     );
   }
 
   if (error) {
-    return <p className="text-center text-red-500">{error}</p>;
+    return <p className="text-center text-red-500 text-xl">{error}</p>;
   }
 
   if (!order) {
-    return <p className="text-center text-gray-500">Order not found.</p>;
+    return (
+      <p className="text-center text-gray-500 text-xl">Order not found.</p>
+    );
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-100 to-gray-300 py-10">
-      <Breadcrumbs title="Order Details" prevLocation={prevLocation} />
-      <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
-        {/* Order Details Section */}
-        <div className="p-6 border-b">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Order Details
-          </h1>
-          <p className="text-sm text-gray-500">
-            <strong>Order ID:</strong> {order._id}
-          </p>
-          <p className="text-sm text-gray-500">
-            <strong>Order Date:</strong>{" "}
-            {new Date(order.createdAt).toLocaleDateString()}
-          </p>
-          <p className="text-sm text-gray-500">
-            <strong>Delivery Date:</strong>{" "}
-            {new Date(order.deliveryDate).toLocaleDateString()}
-          </p>
-          <p className="text-lg font-semibold text-gray-800 mt-4">
-            Total Price:{" "}
-            <span className="text-green-600">
-              ₹{order.totalPrice.toFixed(2)}
-            </span>
-          </p>
+    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <Breadcrumbs title="Order Details" />
+      <div className="max-w-7xl mx-auto bg-white shadow-lg rounded-lg p-8">
+        <h1 className="text-4xl font-bold text-gray-800 mb-6 text-center">
+          Order Details
+        </h1>
+
+        {/* Order Summary */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+            <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+              Order Info
+            </h2>
+            <p className="text-lg text-gray-600">Order ID: {order._id}</p>
+            <p className="text-lg text-gray-600">Status: {order.status}</p>
+            <p className="text-lg text-gray-600">
+              Order Date: {new Date(order.createdAt).toLocaleDateString()}
+            </p>
+            <p className="text-lg text-gray-600">
+              Delivery Date: {new Date(order.deliveryDate).toLocaleDateString()}
+            </p>
+            <p className="text-xl font-semibold text-gray-800 mt-4">
+              Total Price:${order.totalPrice.toFixed(2)}
+            </p>
+          </div>
+
+          {/* Shipping Address */}
+          <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+            <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+              Shipping Address
+            </h2>
+            <p className="text-lg text-gray-600">
+              Address: {order.shippingAddress.address}, <br />
+              City: {order.shippingAddress.city}, <br />
+              State: {order.shippingAddress.state},
+              <br />
+              Pincode: {order.shippingAddress.pincode} <br />
+              Country: {order.shippingAddress.country}
+            </p>
+            <p className="text-lg text-gray-600">
+              Phone: {order.shippingAddress.mobileno}
+            </p>
+          </div>
         </div>
 
-        {/* Order Items Section */}
-        <div className="p-6 border-b">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Items</h2>
-          <div className="space-y-4">
+        {/* Order Items */}
+        <div className="mt-8">
+          <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+            Ordered Items
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {order.items.map((item) => (
               <div
                 key={item._id}
-                className="flex items-center bg-gray-50 rounded-lg p-4 shadow-sm hover:shadow-md transition"
+                className="bg-white p-4 rounded-lg shadow-md flex items-center space-x-4"
               >
                 <img
                   src={item.image}
                   alt={item.title}
-                  className="w-20 h-20 object-cover rounded mr-4"
+                  className="w-24 h-24 object-cover rounded-md"
                 />
-                <div className="flex-1">
-                  <p className="font-medium text-gray-800 text-lg">
+                <div>
+                  <p className="text-lg font-medium text-gray-800">
                     {item.title}
                   </p>
-                  <p className="text-sm text-gray-500 mb-1">{item.category}</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600">{item.category}</p>
+                  <p className="text-lg text-gray-700">
                     ₹{item.price} × {item.quantity}
                   </p>
                 </div>
@@ -111,42 +130,20 @@ function OrderDetails() {
           </div>
         </div>
 
-        {/* Shipping Address Section */}
-        <div className="p-6 border-b">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-            Shipping Address
-          </h2>
-          <p className="text-gray-600 mb-1">
-            <strong>Address:</strong> {order.shippingAddress.address},{" "}
-            {order.shippingAddress.city}, {order.shippingAddress.state},{" "}
-            {order.shippingAddress.zipCode}
-          </p>
-          <p className="text-gray-600">
-            <strong>Phone:</strong> {order.shippingAddress.mobileno}
-          </p>
-        </div>
-
-        {/* Payment Details Section */}
+        {/* Payment Details */}
         {payment && (
-          <div className="p-6">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+          <div className="mt-8 bg-gray-50 p-6 rounded-lg shadow-sm">
+            <h2 className="text-2xl font-semibold text-gray-700 mb-4">
               Payment Details
             </h2>
-            <p className="text-sm text-gray-500">
-              <strong>Payment Method:</strong> {payment.paymentMethod}
+            <p className="text-lg text-gray-600">
+              Payment Method: {payment.paymentMethod}
             </p>
-            {/* <p className="text-sm text-gray-500">
-              <strong>Payment Status:</strong> {payment.status}
-            </p> */}
-            <p className="text-lg font-semibold text-gray-800 mt-4">
-              Amount Paid:{" "}
-              <span className="text-green-600">
-                {" "}
-                ${payment.totalPrice.toFixed(2)}{" "}
-              </span>
+            <p className="text-lg text-gray-600">
+              Transaction ID: {payment.transactionId}
             </p>
-            <p className="text-sm text-gray-500">
-              <strong>Transaction ID:</strong> {payment.transactionId}
+            <p className="text-xl font-semibold text-gray-800 mt-4">
+              Amount Paid: ₹{payment.totalPrice.toFixed(2)}
             </p>
           </div>
         )}
