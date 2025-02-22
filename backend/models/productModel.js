@@ -16,6 +16,7 @@ const productSchema = new mongoose.Schema({
   },
   quantity: Number,
   sellerId: { type: mongoose.Schema.Types.ObjectId, ref: "Seller" }, 
+  createdAt: { type: mongoose.Schema.Types.Date, default: Date.now },
 });
 
 const Product = mongoose.model("Product", productSchema,"Product");
